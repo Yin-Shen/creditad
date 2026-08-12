@@ -45,7 +45,7 @@ never evidence that the boundary is false.
 ```bash
 pip install .            # library + `creditad` CLI
 pip install '.[test]'    # + test suite
-pip install '.[app]'     # + the optional HTTP/GUI surface
+pip install '.[server]'  # + the optional HTTP/JSON API server (no GUI; see REPRODUCE.md)
 ```
 
 Python >= 3.10.
@@ -83,17 +83,23 @@ backend/mcool_bed.py        bigWig / loop-call readers used by the annotation pa
 backend/validate_bigwig.py  genome-build guard for supplied tracks
 backend/tests/              pytest suite
 scripts/                    package regeneration and reproduction scripts
+docs/                       the six-package reproduction report for this release
 ```
 
 ## Data
 
 The six evidence tables (284,744 boundaries), the candidate and per-caller BEDs, the
-HiCCUPS loop calls and chr7 preview tracks ship here under `data/` (~56 MB, gzipped where
-it matters). The genome-wide ENCODE ChIP tracks and 4DN Hi-C matrices are obtained by
-accession: the desktop application's Data Manager lists each one with its size and
-destination folder, links it for one-click retrieval from ENCODE/4DN, and detects it once
-in place. A CLI-only install has no download path and fetches them from ENCODE directly. Large binaries and the release snapshot are
-archived on Zenodo.
+HiCCUPS loop calls and chr7 preview tracks ship here under `data/` (56 MB, gzipped
+where it matters). The genome-wide ENCODE ChIP tracks and 4DN Hi-C matrices are obtained by
+accession. **This repository ships no graphical application.** The released code is the
+library, the `creditad` CLI and an optional aiohttp API server; the Electron desktop
+client is developed separately and is not part of this release. The server's Data Manager
+endpoints (`/api/data/status`, `/api/data/catalog`, `/api/data/verify`) report which inputs
+are present, re-hash the shipped chr7 assets against stored MD5s, and give the accession,
+size and destination folder for each track you still need -- they never fetch the
+full-genome ENCODE files. A CLI-only install has no download path at all; you retrieve the
+tracks from ENCODE yourself. Large binaries and the release snapshot are archived on
+Zenodo.
 
 Full three-tier breakdown, including exactly what is and is not checksum-verified:
 [DATA_POLICY.md](DATA_POLICY.md). Accessions and the reproduction procedure:

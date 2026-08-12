@@ -55,13 +55,26 @@ test = [
     "joblib>=1.2",
 ]
 dev = ["ruff>=0.1", "mypy>=1.5"]
-app = [
+# HTTP/JSON API server dependencies -- NOT a graphical application. This repository
+# ships no frontend: 0 of the 74 installed files is an .html/.js/.css/.vue asset and
+# the only console script is `creditad`. Installing this extra gives you
+# backend/main.py, an aiohttp server exposing /api/data/* and /api/tadvci/* over HTTP;
+# nothing is served at `/` (measured: HTTP 404). The Electron desktop client is
+# developed separately and is not part of this release. See "Running the API server"
+# in REPRODUCE.md.
+server = [
     "aiohttp>=3.9",
     "aiohttp-cors>=0.7",
     "SQLAlchemy>=2.0",
     "cooltools>=0.7",          # mcool_bed strict Open2C cooltools.insulation caller
     "pyBigWig>=0.3; platform_system != 'Windows'",
     "winbbi>=0.1.4; platform_system == 'Windows'",
+]
+# Deprecated alias for `server`, kept so that `pip install '.[app]'` -- the command
+# used in v1.0.0 and in earlier manuscript drafts -- keeps working. It installs the API
+# server dependencies; it has never installed a desktop application.
+app = [
+    "creditad[server]",
 ]
 ml = ["scikit-learn>=1.2", "joblib>=1.2"]
 # .hic input only (module `hicstraw`); guarded import in backend/hic_reader.py, so the

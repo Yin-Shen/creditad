@@ -3,16 +3,16 @@
 Three tiers: what ships here, what the user obtains from ENCODE/4DN, what is archived.
 Every size below was measured from the files themselves.
 
-## Tier 1 — ships in this repository (~56 MB)
+## Tier 1 — ships in this repository (57 MB, 155 files)
 
 | content | path | size |
 |---|---|---|
 | six evidence tables, 284,744 boundaries | `data/multicell/<CELL>_<RES>/annotation.tsv.gz` | 17.5 MB gz (144.9 MB raw) |
 | candidate, per-caller and tier BEDs | `data/multicell/<CELL>_<RES>/*_boundaries.bed.gz` | 5.4 MB gz (24.1 MB raw) |
-| package manifests | `data/multicell/<CELL>_<RES>/manifest.json` | 12 kB |
-| HiCCUPS loop calls (BD4 input) | `data/loops/*.bedpe.gz` | 1.7 MB gz (5.2 MB raw) |
+| package manifests | `data/multicell/<CELL>_<RES>/manifest.json` | 10 kB |
+| HiCCUPS loop calls (BD4 input), 3 cell lines | `data/loops/*.bedpe.gz` | 1.6 MB gz (4.9 MB raw) |
 | chr7 **preview** ChIP tracks | `data/chr7_preview_tracks/*.bigWig` | 31.6 MB |
-| source, tests, scripts, metadata | `backend/`, `tests/`, `scripts/`, root | 1.2 MB |
+| source, tests, scripts, metadata, reproduction report | `backend/`, `scripts/`, `docs/`, root | 1.2 MB |
 
 Tables and BEDs ship gzipped. Raw they are 169 MB, which is not appropriate for git;
 gzip is lossless and `pandas.read_csv` reads `.gz` directly, so no downstream code changes.
@@ -39,38 +39,52 @@ Not redistributed here: third-party files under the source portals' terms, and l
 GM12878 `4DNFIXP4QG5B`, IMR90 `4DNFIJTOIGOI`, HepG2 `4DNFIS6HAUPP`. Needed only to re-run
 the upstream callers.
 
-### What the application does for you
+### What the released code does for you — and what it is not
 
-The desktop application (`pip install 'creditad[app]'`) ships a Data Manager page that
-resolves every input the tool needs. It operates at two levels, and the difference matters:
+**This repository ships no graphical application.** The released code is the library, the
+`creditad` CLI, and an optional aiohttp **API server** (`pip install '.[server]'`; the old
+`[app]` name still resolves as a deprecated alias). Measured on the installed package: 0 of
+74 files is a frontend asset, `creditad` is the only console script, and the server returns
+**HTTP 404 at `/`** because no UI is served. The Electron desktop client that consumes this
+API is developed separately and is not part of this release.
 
-| | shipped chr7 demo assets (9 files) | optional full-genome tracks (ENCODE/4DN) |
+The Data Manager is therefore an HTTP surface, not a page — and it is fully reachable
+without a frontend. `REPRODUCE.md` gives the exact `curl` calls and the startup command
+(the server needs `TAD_DB_PATH` set; its built-in default is a relative path that does not
+exist here). What that surface does:
+
+| | shipped chr7 demo assets (9 entries) | optional full-genome tracks (ENCODE/4DN) |
 |---|---|---|
-| listed with accession, size, destination folder | yes | yes |
-| retrieved over the network by the application | no — they ship with the package, or are linked from a local copy | no — one-click link to the source repository |
-| MD5-verified by the application | **yes** (stored digest; the file on disk is re-hashed on request) | **no** (no stored MD5 for these entries) |
-| detected once present on disk | yes | yes — the row switches to "In use" |
+| listed with accession, size, destination folder | yes (`/api/data/status`) | yes (`/api/data/catalog`) |
+| retrieved over the network by the server | **no** — 6 of the 9 ship here; `download` returns HTTP 400 naming the folder | **no** — the catalog gives the source URL; retrieval is yours |
+| MD5-verified by the server | **yes** — stored digest, file re-hashed on request, returns `MD5 match` | **no** — these entries carry no stored MD5 |
+| detected once present on disk | yes | yes |
 
-The nine demo entries carry a stored MD5 but no URL: the application resolves them from
-the installed package or a local shared copy and re-hashes the file on disk against that
-digest, reporting `MD5 match`. Requesting one that is absent returns "No configured
-download URL"; the application does not fetch it. The download code path does hash-then-
-refuse on mismatch, but no shipped entry reaches it.
+The nine demo entries carry a stored MD5 but no URL. `POST /api/data/verify` re-hashes the
+file on disk against that digest and returns `{"verified": true, …, "reason": "MD5 match"}`;
+for an absent file it returns `{"verified": false, "reason": "File not found"}` — HTTP 200 in
+both cases, so read the body. `POST /api/data/download` returns **HTTP 400** with the
+directory to place the file in. Six of the nine (the chr7 CTCF and RAD21 bigWigs) are in
+`data/chr7_preview_tracks/`; the three chr7 `.mcool` maps are not (42–91 MB each) and are in
+the Zenodo archive.
 
-For the full-genome tracks each ENCODE item renders a Download button pointing at
-`https://www.encodeproject.org/files/<ACC>/@@download/<ACC>.bigWig` and each 4DN matrix a
-"4DN page" link, alongside the expected size and the `place_under` folder. The user is
-therefore never left to hunt for files — but the application is not streaming those
-particular files itself, and it cannot vouch for their integrity, because the catalog
-entries for them carry no MD5. ENCODE publishes an MD5 on each file's page.
+For the full-genome tracks the catalog gives each accession, its size, the destination
+folder and the source URL
+(`https://www.encodeproject.org/files/<ACC>/@@download/<ACC>.bigWig`, or the 4DN file page).
+The server does not stream them and **cannot vouch for their integrity**, because those
+catalog entries carry no MD5. ENCODE publishes an MD5 on each file's page.
+
+In one sentence: **the server verifies what ships and points at what does not; it downloads
+nothing, and it is an API rather than an application.**
 
 **The CLI has no download path.** `creditad --help` offers `annotate` and `criteria`; the
-CLI never references the Data Manager, and importing it from a core install raises a
-message pointing at `creditad[app]`. CLI-only users fetch the six bigWigs from the ENCODE
-URLs themselves.
+CLI never references the Data Manager, and importing it from a core install raises a message
+pointing at the server extra. CLI-only users fetch the six bigWigs from the ENCODE URLs
+themselves — the supported reproduction path, and the one `scripts/reproduce_packages.py`
+expects.
 
-Each statement in this section was established by testing the shipped code — driving the
-HTTP handlers and probing a core-only install — not by reading it.
+Every statement in this section was established by driving a live server started from a
+clean clone of this repository — not by reading the code.
 
 ## Tier 3 — archived to Zenodo
 

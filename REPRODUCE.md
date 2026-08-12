@@ -23,14 +23,14 @@ boundaries itself.
 
 ## Data availability — three tiers
 
-### Tier 1 — ships in this repository (~56 MB)
+### Tier 1 — ships in this repository (57 MB)
 
 | what | where | form |
 |---|---|---|
 | six evidence tables (284,744 boundaries) | `data/multicell/<CELL>_<RES>/annotation.tsv.gz` | gzip (17.5 MB; 145 MB raw) |
 | candidate BED + six per-caller BEDs + tier BED | `data/multicell/<CELL>_<RES>/*_boundaries.bed.gz` | gzip (5.4 MB) |
 | package manifests (accessions, counts, provenance) | `data/multicell/<CELL>_<RES>/manifest.json` | plain |
-| HiCCUPS loop calls (the BD4 input) | `data/loops/<CELL>_HiCCUPS_loops_hg38.bedpe.gz` | gzip (1.7 MB) |
+| HiCCUPS loop calls (the BD4 input), 3 cell lines | `data/loops/<CELL>_HiCCUPS_loops_hg38.bedpe.gz` | gzip (1.6 MB) |
 | chr7 **preview** ChIP tracks | `data/chr7_preview_tracks/*.bigWig` | 31.6 MB |
 
 `pandas.read_csv` reads the `.gz` files directly; nothing needs unpacking first.
@@ -60,38 +60,106 @@ ENCODE files: `https://www.encodeproject.org/files/<ACCESSION>/` — GRCh38, out
 `https://data.4dnucleome.org/files-processed/<ACCESSION>/`; needed only if you want to
 re-run the upstream callers, not to reproduce the evidence tables.
 
-**How they are obtained, stated precisely.** The desktop application (the `app` extra)
-ships a Data Manager that resolves every input the tool needs, at two different levels of
-automation:
+**How they are obtained, stated precisely.** This repository ships **no graphical
+application**. The released code is the library, the `creditad` CLI, and an optional
+aiohttp API server (`pip install '.[server]'`). The Electron desktop client that wraps
+this API is developed separately and **is not part of this release** — 0 of the 74
+installed files is a frontend asset, and `creditad` is the only console script. What
+follows describes the API server, which *is* released, and every statement below was
+measured against a live server started from a clean clone of this repository.
 
-- **Shipped chr7 demo assets (nine files)** — **MD5-verified inside the application, not
-  downloaded by it.** These nine entries carry a stored digest but no URL: they ship with
-  the package or are resolved from a local copy, and the verify endpoint re-hashes the file
-  on disk and reports `MD5 match`. Asking the application to fetch one that is absent
-  returns "No configured download URL" and the path where you should place it. (The
-  download code path does refuse a file whose MD5 disagrees, but no shipped entry reaches
-  it, because none has a URL.)
-- **Optional full-genome ENCODE/4DN tracks (the table above)** — listed per accession with
-  the file size and the exact destination folder, and **linked for one-click retrieval
-  from the source repository**: each ENCODE item renders a Download button pointing at
-  `https://www.encodeproject.org/files/<ACC>/@@download/<ACC>.bigWig`, and each 4DN matrix
-  renders a "4DN page" link. Once a file is in place the application detects it and the
-  row switches to "In use"; until then it shows the path where it is expected.
+**The Data Manager is an HTTP API, and it is reachable without any frontend.** With the
+server running (see "Running the API server" below):
 
-So you are not hunting for six files: the application tells you which accession, how large
-it is, where to put it, gives you the link, and confirms when it can see it. What it does
-**not** do is stream those particular files itself — that step is a click through to
-ENCODE — and because the full-genome catalog entries carry no stored MD5, **they are not
-checksum-verified by the application**. ENCODE publishes an MD5 on each file's own page if
-you want to check one. In-app MD5 verification covers the nine shipped demo assets and
-nothing else. In short: the application verifies, it does not download.
+```bash
+# which inputs the tool can see, and where it expects the ones it cannot
+curl -s http://127.0.0.1:5001/api/data/status  | python -m json.tool   # HTTP 200
+# the optional full-genome catalog: accession, size, destination folder
+curl -s http://127.0.0.1:5001/api/data/catalog | python -m json.tool   # HTTP 200
+
+# re-hash a shipped chr7 asset against its stored MD5
+# (requires the one-time links at the end of this section, which is where the
+#  server looks for these files; on a bare clone it reports File not found)
+curl -s -X POST http://127.0.0.1:5001/api/data/verify \
+     -H 'Content-Type: application/json' \
+     -d '{"id":"gm12878_ctcf_chr7_bigwig"}'
+# -> {"verified": true, "expected": "5758946f…", "actual": "5758946f…", "reason": "MD5 match"}
+
+# asking it to FETCH a file it has no URL for
+curl -s -X POST http://127.0.0.1:5001/api/data/download \
+     -H 'Content-Type: application/json' -d '{"id":"gm12878_chr7_mcool"}'
+# -> HTTP 400 {"error": "No configured download URL for GM12878_chr7_hg38.mcool;
+#              place it manually in <dir>"}
+```
+
+Two levels of automation, and the difference matters:
+
+- **Shipped chr7 demo assets (nine catalog entries)** — **verified, not downloaded.** These
+  entries carry a stored MD5 but no URL. `POST /api/data/verify` re-hashes the file on disk
+  and returns `{"verified": true, …, "reason": "MD5 match"}`; for a file that is absent it
+  returns `{"verified": false, "reason": "File not found"}` — HTTP 200 either way, so check
+  the body, not the status. `POST /api/data/download` on one of them returns **HTTP 400**
+  naming the directory to place it in. Six of the nine (the chr7 CTCF and RAD21 bigWigs)
+  ship in this repository under `data/chr7_preview_tracks/`; the three chr7 `.mcool` contact
+  maps do not (42–91 MB each) and are in the Zenodo archive.
+- **Optional full-genome ENCODE/4DN tracks (the table above)** — **listed, never fetched.**
+  `GET /api/data/catalog` returns each accession with its size, the exact folder to place it
+  in, and the source URL (`https://www.encodeproject.org/files/<ACC>/@@download/<ACC>.bigWig`
+  for ENCODE, the 4DN file page for matrices). Once a file is in place the entry reports it
+  as present. These entries carry **no stored MD5**, so the server does not and cannot
+  checksum them; ENCODE publishes an MD5 on each file's own page.
+
+In short: **the server verifies what ships and points at what does not. It downloads
+nothing.** The retrieval step is yours, whether you use the API or not.
 
 **The CLI has no download path at all.** `creditad annotate` never references the Data
 Manager, and `creditad --help` advertises only `annotate` and `criteria`; in a core
 `pip install creditad`, importing the downloader raises a message telling you to install
-`creditad[app]`. **A CLI-only user retrieves the six bigWigs from the ENCODE URLs above
-themselves.** All three statements above were established by testing the shipped code, not
-by reading it.
+the server extra. **A CLI-only user retrieves the six bigWigs from the ENCODE URLs above
+themselves** — which is the supported path for reproducing the tables, and the one
+`scripts/reproduce_packages.py` expects.
+
+### Running the API server
+
+The server is usable headless. It needs a writable SQLite path, because the built-in
+default is a *relative* path (`extra_mode/tad_tokens.db`) that does not exist in this
+repository — without `TAD_DB_PATH` it exits during startup with
+`sqlite3.OperationalError: unable to open database file`:
+
+```bash
+pip install '.[server]'
+mkdir -p ~/.creditad
+cd backend
+TAD_DB_PATH="sqlite:///$HOME/.creditad/tad_tokens.db" CREDITAD_PORT=5001 python main.py
+# -> [STARTUP|ready|done|All systems operational on port 5001
+#    CrediTAD API ready [Port: 5001]
+```
+
+What you get is a **JSON API, not a web page**: `GET /` returns HTTP 404, because no
+frontend is served. The routes are `/api/data/*` (above) and `/api/tadvci/*`
+(`cells`, `multicell_datasets`, `annotate`, `card/{token}/{chrom}/{pos}`, `triage/{token}`,
+`signout`, `history/{boundary_id}`, `records`).
+
+Two of those route groups resolve their inputs from a **development-tree layout**
+(`example_data/multicell`, `backend/extra_mode/chr7_tracks`) rather than this repository's
+`data/` layout, and there is no environment variable to redirect them. To let the server
+see the shipped packages and preview tracks, link them once from the repository root:
+
+```bash
+mkdir -p example_data backend/extra_mode
+ln -s ../data/multicell            example_data/multicell
+ln -s ../data/chr7_preview_tracks  example_data/chr7_tracks
+ln -s ../../data/chr7_preview_tracks backend/extra_mode/chr7_tracks
+ln -s ../../data/loops               backend/extra_mode/loops
+```
+
+Measured effect of those links: `GET /api/tadvci/multicell_datasets` goes from
+`{"ok": false, "datasets": []}` to all **six** packages with their candidate counts
+(28,259 / 69,479 / 28,476 / 65,157 / 29,513 / 63,860), and `GET /api/data/status` goes from
+0 to **6 of 9** entries present — the three missing ones are the chr7 `.mcool` maps that are
+not in this repository. This is a packaging wart, disclosed rather than papered over: the
+reproduction path (`scripts/reproduce_packages.py`, environment-variable driven) does not
+need it, and the CLI does not need it.
 
 ### Tier 3 — archived to Zenodo
 
@@ -123,12 +191,13 @@ Runtime: about 100 s for all six on one core (see the benchmark in the paper).
 
 ```bash
 pip install '.[test]'
-pytest                     # 290 passed, 26 deselected
+pytest                     # 239 passed, 39 skipped, 7 deselected
 ```
 
-The 26 deselected tests are quarantined legacy experiments (`legacy_bcp`,
+The 7 deselected tests are quarantined legacy experiments (`legacy_bcp`,
 `legacy_reference` markers in `pyproject.toml`); they are not part of the production
-contract.
+contract. The 39 skips are tests whose data is not present in a clean checkout (archived
+hg19 fixtures, host ChIP tracks); they report the missing file and skip rather than fail.
 
 ## Environment variables
 
