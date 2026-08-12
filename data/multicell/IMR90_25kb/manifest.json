@@ -1,0 +1,46 @@
+{
+  "name": "IMR90_25kb_multicaller_union",
+  "cell_line": "IMR90",
+  "assembly": "hg38",
+  "resolution_bp": 25000,
+  "role": "CrediTAD downstream evidence-card demo \u2014 boundaries NOT called by CrediTAD",
+  "candidate_definition": "deduplicated union of the six panel callers' domain endpoints, snapped to the bin grid; no ConsensusTAD involved",
+  "consensus_used": false,
+  "upstream_pipeline": "local multi-caller run (OnTAD level-2, SpectralTAD level-1, TopDom, MSTD v1, Arrowhead Juicer 1.22.01 with SCALE balancing, DI domaincaller); cooler ICE for Hi-C. Parameter CHOICES follow Li et al. Nat Methods 2026 where obtainable; this is a local panel, not a byte-reproduction of TADShop. Method-level limitations: docs/MEASURED_LIMITATIONS.md.",
+  "source_percaller": "calling_repro_final/IMR90_25kb/percaller.tsv",
+  "source_percaller_sha256": "5196df95fcaf65c0c2205a456bd72cc5d7c4fd6831536c123f896f141e6e01a2",
+  "n_candidates": 28476,
+  "per_caller_boundary_counts": {
+    "TopDom": 8989,
+    "SpectralTAD": 11525,
+    "OnTAD": 3526,
+    "MSTD": 5694,
+    "arrowhead": 8300,
+    "DI": 7254
+  },
+  "bd1_panel": [
+    "TopDom",
+    "SpectralTAD",
+    "OnTAD",
+    "MSTD",
+    "arrowhead",
+    "DI"
+  ],
+  "bd1_n_methods": 6,
+  "chip_tracks": {
+    "CTCF": "ENCFF105FHL",
+    "RAD21": "ENCFF048PZI"
+  },
+  "chip_output_type": "fold change over control",
+  "cross_cell_comparable": true,
+  "loop_calls": "HiCCUPS (IMR90, hg38)",
+  "tier_counts": {
+    "D3": 9640,
+    "D1": 8520,
+    "D4": 5734,
+    "D5": 3070,
+    "D2": 1512
+  },
+  "caveats": [],
+  "reference_note": "TAD boundaries have no ground truth; this package is caller output graded by evidence, not a validated boundary set."
+}

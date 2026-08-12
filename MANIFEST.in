@@ -1,0 +1,32 @@
+# Source distribution contents.
+#
+# `python -m build` was found (audit 2026-08-12) to omit REPRODUCE.md, DATA_POLICY.md and
+# CITATION.cff from the sdist: setuptools includes README.md and the licence by default,
+# but nothing else at the root. An sdist that cannot tell you how to reproduce the results
+# or how to cite the work is not a useful archive, and Zenodo archives the sdist.
+include README.md
+include REPRODUCE.md
+include DATA_POLICY.md
+include CITATION.cff
+include LICENSE
+include .zenodo.json
+include Dockerfile
+include requirements.txt
+include requirements.lock.txt
+include pyproject.toml
+
+# Reproduction + packaging scripts.
+recursive-include scripts *.py
+
+# Test suite: shipped in the sdist (so a downloaded archive is verifiable) but NOT in the
+# wheel -- pyproject's packages.find already excludes it from the installed distribution.
+recursive-include backend/tests *.py *.json *.tsv *.bed *.bedpe *.mcool
+
+# The tier-1 data tree is deliberately NOT in the sdist: it is 56 MB, it is versioned in
+# git and archived to Zenodo separately, and PyPI is not a data-distribution channel.
+prune data
+
+# Never ship caches or build residue.
+global-exclude __pycache__/* *.py[cod] *.so .DS_Store
+prune build
+prune dist

@@ -1,0 +1,43 @@
+# CrediTAD backend runtime + test dependencies (floor ranges).
+# For the exact tested environment use requirements.lock.txt.
+# For the RETIRED hg19 analysis scripts under backend/analyses/ use requirements-analyses.txt.
+#
+# Reconciled against a full AST import scan of backend/ on 2026-07-25 (issue F6):
+# every line below is imported by backend/ code outside backend/analyses/, and every
+# third-party module imported there is declared here.
+
+# --- web app ---
+aiohttp>=3.9.0
+aiohttp-cors>=0.7.0
+sqlalchemy>=2.0.0
+
+# --- numerics / tabular ---
+numpy>=1.24.0
+pandas>=2.0.0,<3      # tested on 2.3.1; pandas 3.x is untested here, hence the cap
+scipy>=1.11.0
+tqdm>=4.65.0
+
+# --- genomics IO ---
+cooler>=0.9.0
+cooltools>=0.7.0        # mcool_bed strict Open2C cooltools.insulation caller
+h5py>=3.9.0
+hic-straw>=1.3          # module `hicstraw`; .hic input in backend/hic_reader.py. Present in the
+                        # tested env; the import is guarded, so a .hic-free install still runs.
+pyBigWig>=0.3.0; platform_system != 'Windows'
+winbbi>=0.1.4; platform_system == 'Windows'
+
+# --- callers / models ---
+hmmlearn>=0.3.0
+scikit-image>=0.20      # builtin_callers_v2.thresholds Li/Otsu strategies. NOT optional in
+                        # practice: when absent the code silently falls back to a 0.75-quantile
+                        # cutoff, i.e. it changes the numbers instead of failing.
+scikit-learn>=1.3.0
+joblib>=1.2             # loads the served bcp_model.joblib (backend/tests/tad_vci)
+
+# --- tests ---
+pytest>=7.4.0
+
+# Removed 2026-07-25 (issue F6) after a repo-wide import grep found zero importers outside
+# _history/: pyfaidx, xgboost, seaborn.
+# Moved to requirements-analyses.txt (imported only by the retired hg19 analysis scripts):
+#   torch, matplotlib, python-docx, pyliftover.

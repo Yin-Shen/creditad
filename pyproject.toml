@@ -1,0 +1,123 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "creditad"
+version = "1.0.0"
+description = "Structured evidence cards for post-calling review of TAD boundaries"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+# Core = what `import tad_vci` / `import builtin_callers_v2` / the CLI actually need.
+# Reconciled with backend/requirements.txt by an AST import scan on 2026-07-25 (issue F6).
+dependencies = [
+    "numpy>=1.22",
+    "scipy>=1.9",
+    "pandas>=1.5,<3",          # tested on 2.3.1; pandas 3.x untested
+    "cooler>=0.9",
+    "h5py>=3.7",
+    "tqdm>=4.65",
+    "hmmlearn>=0.3",
+    # BD2/BD3 read the ChIP bigWigs through mcool_bed._bw_window_signal, which is on the
+    # documented `creditad annotate --ctcf/--rad21` path. Previously declared only in the
+    # test/app extras, so a core `pip install .` produced a CLI that died with
+    # ModuleNotFoundError: pyBigWig as soon as a ChIP track was supplied (audit 2026-08-12).
+    "pyBigWig>=0.3; platform_system != 'Windows'",
+    "winbbi>=0.1.4; platform_system == 'Windows'",
+    # builtin_callers_v2.thresholds Li/Otsu; without it the code silently falls back to a
+    # 0.75-quantile cutoff, changing caller output instead of failing.
+    "scikit-image>=0.20",
+]
+
+[project.urls]
+Homepage = "https://github.com/Yin-Shen/creditad"
+Repository = "https://github.com/Yin-Shen/creditad"
+Issues = "https://github.com/Yin-Shen/creditad/issues"
+
+[project.scripts]
+creditad = "tad_vci.cli:main"
+
+[project.optional-dependencies]
+# backend/tests imports, beyond core: pytest, aiohttp, sklearn, joblib, pyBigWig, cooler, h5py.
+# backend/tests/test_http_input_guards.py imports backend/main.py, which imports
+# aiohttp_cors and sql (SQLAlchemy) at MODULE scope. Without them pytest fails at
+# COLLECTION -- not as a skip -- so `pip install .[test] && pytest` could not run from a
+# clean checkout at all (audit 2026-08-12). pyBigWig moved to core deps.
+test = [
+    "pytest>=7.2",
+    "pytest-cov>=4.0",
+    "aiohttp>=3.9",
+    "aiohttp-cors>=0.7",
+    "SQLAlchemy>=2.0",
+    "scikit-learn>=1.2",
+    "joblib>=1.2",
+]
+dev = ["ruff>=0.1", "mypy>=1.5"]
+app = [
+    "aiohttp>=3.9",
+    "aiohttp-cors>=0.7",
+    "SQLAlchemy>=2.0",
+    "cooltools>=0.7",          # mcool_bed strict Open2C cooltools.insulation caller
+    "pyBigWig>=0.3; platform_system != 'Windows'",
+    "winbbi>=0.1.4; platform_system == 'Windows'",
+]
+ml = ["scikit-learn>=1.2", "joblib>=1.2"]
+# .hic input only (module `hicstraw`); guarded import in backend/hic_reader.py, so the
+# package installs and runs without it -- .hic files then raise a clear ImportError.
+hic = ["hic-straw>=1.3"]
+
+[tool.setuptools]
+package-dir = { "" = "backend" }
+# Every top-level module an INSTALLED package imports must ship, or the wheel is
+# import-incomplete and fails only at runtime. Audit 2026-08-12 found three gaps:
+#   validate_bigwig  <- tad_vci.annotate_from_beds (UNGUARDED; every --assembly run died)
+#   hic_reader       <- mcool_bed (guarded; degrades to HIC_AVAILABLE=False)
+#   data_manager     <- tad_vci.api_routes (guarded; optional full-genome track search)
+# bigwig_adapter / bigwig_helper are the cross-platform BigWig layer used by the app path.
+py-modules = [
+    "mcool_bed",
+    "validate_bigwig",
+    "hic_reader",
+    "data_manager",
+    "bigwig_adapter",
+    "bigwig_helper",
+    # HTTP/GUI surface (the `app` extra supplies aiohttp / aiohttp-cors / SQLAlchemy).
+    "main",
+    "sql",
+    "startup_log",
+]
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+namespaces = false
+include = [
+    "tad_vci",
+    "tad_vci.*",
+    "builtin_callers_v2",
+    "builtin_callers_v2.*",
+]
+exclude = [
+    "builtin_callers_v2_pre_4method_backup_20260513",
+    "builtin_callers_v2_pre_4method_backup_20260513.*",
+]
+
+[tool.setuptools.package-data]
+tad_vci = ["calibrated_bands.json", "normalization_spec.json"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+python_files = ["test_*.py"]
+addopts = "-ra --strict-markers -m 'not legacy_bcp and not legacy_reference'"
+markers = [
+    "unit: pure unit tests, no IO",
+    "integration: requires mcool fixtures",
+    "reference_match: requires tadrep installed",
+    "legacy_bcp: quarantined BCP/conformal regression tests; opt in explicitly for forensic work",
+    "legacy_reference: superseded v1 caller/oracle comparison; not part of the production contract",
+]

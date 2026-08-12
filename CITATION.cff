@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use CrediTAD, please cite it as below."
+title: "CrediTAD: structured per-boundary evidence records for post-calling review of TAD boundaries"
+abstract: >-
+  A downstream evidence-audit workflow for already-called Hi-C TAD boundaries. For each
+  candidate boundary supplied by any caller, CrediTAD records cross-caller support (BD1)
+  and three separate molecular readouts - CTCF ChIP (BD2), RAD21/cohesin ChIP (BD3) and
+  chromatin-loop anchors (BD4) - as separately graded fields, keeps an unmeasured axis
+  distinct from a measured-and-unenriched one, and combines them with a deterministic,
+  inspectable rule into a D1-D5 evidence tier. The tier is not a probability and not a
+  ground-truth label. CrediTAD does not call TADs and does not rank callers.
+type: software
+license: MIT
+version: "1.0.0"
+repository-code: "https://github.com/Yin-Shen/creditad"
+date-released: "2026-08-12"
+authors:
+  - family-names: "Yang"
+    given-names: "Zhongxin"
+    affiliation: "School of Biomedical Engineering, Anhui Medical University, Hefei 230032, Anhui, China"
+  - family-names: "Chen"
+    given-names: "Tong"
+    affiliation: "School of Biomedical Engineering, Anhui Medical University, Hefei 230032, Anhui, China"
+  - family-names: "Shen"
+    given-names: "Yin"
+    orcid: "https://orcid.org/0000-0001-7002-4022"
+    affiliation: "School of Biomedical Engineering, Anhui Medical University, Hefei 230032, Anhui, China"

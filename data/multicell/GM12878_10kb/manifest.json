@@ -1,0 +1,46 @@
+{
+  "name": "GM12878_10kb_multicaller_union",
+  "cell_line": "GM12878",
+  "assembly": "hg38",
+  "resolution_bp": 10000,
+  "role": "CrediTAD downstream evidence-card demo \u2014 boundaries NOT called by CrediTAD",
+  "candidate_definition": "deduplicated union of the six panel callers' domain endpoints, snapped to the bin grid; no ConsensusTAD involved",
+  "consensus_used": false,
+  "upstream_pipeline": "local multi-caller run (OnTAD level-2, SpectralTAD level-1, TopDom, MSTD v1, Arrowhead Juicer 1.22.01 with SCALE balancing, DI domaincaller); cooler ICE for Hi-C. Parameter CHOICES follow Li et al. Nat Methods 2026 where obtainable; this is a local panel, not a byte-reproduction of TADShop. Method-level limitations: docs/MEASURED_LIMITATIONS.md.",
+  "source_percaller": "calling_repro_final/GM12878_10kb/percaller.tsv",
+  "source_percaller_sha256": "5cde679bab01e8d47257494632e3da811661c129937dcf853080e683311fe592",
+  "n_candidates": 69479,
+  "per_caller_boundary_counts": {
+    "TopDom": 25677,
+    "SpectralTAD": 30855,
+    "OnTAD": 5903,
+    "MSTD": 12046,
+    "arrowhead": 16821,
+    "DI": 15281
+  },
+  "bd1_panel": [
+    "TopDom",
+    "SpectralTAD",
+    "OnTAD",
+    "MSTD",
+    "arrowhead",
+    "DI"
+  ],
+  "bd1_n_methods": 6,
+  "chip_tracks": {
+    "CTCF": "ENCFF734CUT",
+    "RAD21": "ENCFF571ZJJ"
+  },
+  "chip_output_type": "fold change over control",
+  "cross_cell_comparable": true,
+  "loop_calls": "HiCCUPS (GM12878, hg38)",
+  "tier_counts": {
+    "D1": 29263,
+    "D3": 20596,
+    "D4": 8911,
+    "D5": 6273,
+    "D2": 4436
+  },
+  "caveats": [],
+  "reference_note": "TAD boundaries have no ground truth; this package is caller output graded by evidence, not a validated boundary set."
+}

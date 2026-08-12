@@ -1,0 +1,36 @@
+{
+  "schema": "creditad-ice-normalization-spec-v1",
+  "spec_version": "v2",
+  "normalization_id": "ICE_cis_cooler_0.10.4_v2",
+  "required_software": {
+    "cooler": "0.10.4"
+  },
+  "resolution_bp": 25000,
+  "algorithm": "cooler.balance_cooler",
+  "balance_name": "ICE_weight",
+  "balance_semantics": "multiplicative",
+  "parameters": {
+    "cis_only": true,
+    "trans_only": false,
+    "ignore_diags": 2,
+    "mad_max": 5,
+    "min_nnz": 10,
+    "min_count": 0,
+    "rescale_marginals": true,
+    "tol": 1e-05,
+    "max_iters": 1000,
+    "chunksize": 10000000
+  },
+  "acceptance_gates": {
+    "required_autosomes": [
+      "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+      "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22"
+    ],
+    "max_normalized_marginal_cv": 0.01,
+    "min_finite_weight_fraction": 0.6,
+    "max_nonpositive_finite_weights": 0,
+    "independent_validation_chromosome": "22",
+    "matrix_rtol": 1e-08,
+    "matrix_atol": 1e-10
+  }
+}
