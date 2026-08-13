@@ -104,9 +104,11 @@ docs/                       the six-package reproduction report for this release
 The six evidence tables (284,744 boundaries), the candidate and per-caller BEDs, the
 HiCCUPS loop calls and chr7 preview tracks ship here under `data/` (56 MB, gzipped
 where it matters). The genome-wide ENCODE ChIP tracks and 4DN Hi-C matrices are obtained by
-accession. **This repository ships no graphical application.** The released code is the
-library, the `creditad` CLI and an optional aiohttp API server; the Electron desktop
-client is developed separately and is not part of this release. The server's Data Manager
+accession. **This repository ships no graphical application source.** The code here is the
+library, the `creditad` CLI and an optional aiohttp API server, and a `pip` install gets
+no frontend. The Electron desktop client is developed in a separate repository; from
+v1.0.1 its pre-built binaries for Linux and Windows are attached to the GitHub release,
+each with a published SHA-256. The server's Data Manager
 endpoints (`/api/data/status`, `/api/data/catalog`, `/api/data/verify`) report which inputs
 are present, re-hash the shipped chr7 assets against stored MD5s, and give the accession,
 size and destination folder for each track you still need -- they never fetch the
@@ -132,3 +134,16 @@ See [CITATION.cff](CITATION.cff).
 ## Licence
 
 MIT — see [LICENSE](LICENSE).
+
+## Desktop application (v1.0.1)
+
+Pre-built desktop binaries are attached to the [v1.0.1
+release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1): a Linux AppImage, a
+Windows NSIS installer and a Windows portable zip. All three embed the same backend as
+this repository (identical SHA-256 for every shipped `.py`) and their own Python runtime,
+so no separate Python installation is needed. Verify a download against the SHA-256 in
+the release notes before running it.
+
+The Linux AppImage was built and started here. The Windows installer was cross-built on
+Linux and confirmed working on Windows by the authors; no Windows version matrix was
+exercised. The desktop client's source lives in a separate repository.

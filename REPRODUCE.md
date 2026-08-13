@@ -61,12 +61,14 @@ ENCODE files: `https://www.encodeproject.org/files/<ACCESSION>/` — GRCh38, out
 re-run the upstream callers, not to reproduce the evidence tables.
 
 **How they are obtained, stated precisely.** This repository ships **no graphical
-application**. The released code is the library, the `creditad` CLI, and an optional
-aiohttp API server (`pip install '.[server]'`). The Electron desktop client that wraps
-this API is developed separately and **is not part of this release** — 0 of the 74
-installed files is a frontend asset, and `creditad` is the only console script. What
-follows describes the API server, which *is* released, and every statement below was
-measured against a live server started from a clean clone of this repository.
+application source**. The released code here is the library, the `creditad` CLI, and an
+optional aiohttp API server (`pip install '.[server]'`): 0 of the 74 installed files is a
+frontend asset, and `creditad` is the only console script. The Electron desktop client
+that wraps this API is developed in a separate repository; from v1.0.1 its **pre-built
+binaries are attached to the GitHub release** (a Linux AppImage, a Windows installer and a
+Windows portable zip, each with a published SHA-256). Installing this package with `pip`
+still gets you no frontend. What follows describes the API server, and every statement
+below was measured against a live server started from a clean clone of this repository.
 
 **The Data Manager is an HTTP API, and it is reachable without any frontend.** With the
 server running (see "Running the API server" below):
