@@ -1,11 +1,56 @@
 import os
 import json
 import datetime
+from pathlib import Path
 from sqlalchemy import create_engine, Column, String, DateTime, Text, Integer, Float, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
-DB_PATH = os.getenv("TAD_DB_PATH", "sqlite:///extra_mode/tad_tokens.db")
+def _default_db_url() -> str:
+    """Where the token database lives when TAD_DB_PATH is not set.
+
+    History: this was the bare relative URL "sqlite:///extra_mode/tad_tokens.db".
+    main.py does os.chdir(_BACKEND_DIR) at import, so the relative path resolves
+    INSIDE the install tree. That is fine for a developer checkout and fatal for a
+    packaged read-only install: starting the released Linux AppImage from its own
+    mount raised
+
+        (sqlite3.OperationalError) unable to open database file
+
+    during init_db(), so the server never came up (measured 2026-08-13,
+    rebuild_2026-08-12/software/scripts/d03_bug4_runtime_effect.py).
+
+    Resolution order:
+      1. $TAD_DB_PATH               - unchanged, still wins.
+      2. backend/extra_mode/        - kept whenever that directory is writable, so an
+                                      existing developer tree and any DB already in it
+                                      behave exactly as before.
+      3. a per-user data directory  - $XDG_DATA_HOME or ~/.local/share on POSIX,
+                                      %LOCALAPPDATA% on Windows. Created on demand.
+    """
+    here = Path(__file__).resolve().parent
+    legacy_dir = here / "extra_mode"
+    legacy_db = legacy_dir / "tad_tokens.db"
+    if legacy_db.is_file() and os.access(legacy_db, os.W_OK):
+        return "sqlite:///%s" % legacy_db
+    if legacy_dir.is_dir() and os.access(legacy_dir, os.W_OK):
+        return "sqlite:///%s" % legacy_db
+    if os.name == "nt":
+        base = Path(os.environ.get("LOCALAPPDATA") or (Path.home() / "AppData" / "Local"))
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local" / "share"))
+    user_dir = base / "CrediTAD"
+    try:
+        user_dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # Last resort: the process temp directory. Losing the token history is bad;
+        # refusing to start at all is worse, and the startup log records the path.
+        import tempfile
+        user_dir = Path(tempfile.gettempdir())
+    return "sqlite:///%s" % (user_dir / "tad_tokens.db")
+
+
+DB_PATH = os.getenv("TAD_DB_PATH") or _default_db_url()
 engine = create_engine(DB_PATH, echo=False, future=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 

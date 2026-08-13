@@ -409,7 +409,14 @@ async def handle_tadvci_use_cell(request: web.Request) -> web.Response:
 # Repo layout: .../creditad/backend/tad_vci/api_routes.py → parents[2] = creditad root.
 # Packaged Electron layout: resources/backend/tad_vci/... → parents[2] = resources/.
 _CREDITAD_ROOT = Path(__file__).resolve().parents[2]
-_MULTICELL_DIR = _CREDITAD_ROOT / "example_data" / "multicell"
+# $CREDITAD_PACKAGES_DIR relocates the six delivered evidence packages without
+# editing the source or symlinking. Unset (the default) reproduces the previous
+# behaviour exactly: <root>/example_data/multicell. A pip-installed release ships
+# them at data/multicell, which is why an override was needed at all.
+_MULTICELL_DIR = Path(
+    os.environ.get("CREDITAD_PACKAGES_DIR")
+    or (_CREDITAD_ROOT / "example_data" / "multicell")
+)
 _BACKEND_DIR = Path(__file__).resolve().parents[1]
 _EXTRA_MODE = _BACKEND_DIR / "extra_mode"
 
@@ -505,9 +512,14 @@ def _multicell_track_paths(cell: str) -> dict:
         rad21_cands.append(root / key / "rad21" / f"{spec['rad21_acc']}.bigWig")
 
     # (2) Shipped chr7-only demo tracks (names always contain _chr7)
-    chr7_dirs = (
-        _EXTRA_MODE / "chr7_tracks",
-        _CREDITAD_ROOT / "example_data" / "chr7_tracks",
+    # $CREDITAD_CHR7_DIR is searched FIRST when set; the two built-in locations are
+    # unchanged and still searched in the same order after it.
+    chr7_dirs = tuple(
+        d for d in (
+            Path(os.environ["CREDITAD_CHR7_DIR"]) if os.environ.get("CREDITAD_CHR7_DIR") else None,
+            _EXTRA_MODE / "chr7_tracks",
+            _CREDITAD_ROOT / "example_data" / "chr7_tracks",
+        ) if d is not None
     )
     for d in chr7_dirs:
         ctcf_cands.append(

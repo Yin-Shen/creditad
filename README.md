@@ -12,12 +12,25 @@ or a truth label.
 
 ## The evidence record
 
-| Criterion | Evidence | Grades |
-|---|---|---|
-| **BD1** | cross-caller support among the supplied caller panel | strong / moderate / weak |
-| **BD2** | CTCF ChIP enrichment | strong / moderate / weak / none / not_assessable |
-| **BD3** | RAD21 (cohesin) ChIP enrichment | strong / moderate / weak / none / not_assessable |
-| **BD4** | chromatin-loop-anchor overlap | strong / moderate / none / not_assessable |
+| Criterion | Evidence | Output column | Grades |
+|---|---|---|---|
+| **BD1** | cross-caller support among the supplied caller panel | `votes` -> `BD1_caller_support` | strong / moderate / weak |
+| **BD2** | CTCF ChIP enrichment | `ctcf`, `ctcf_fold` -> `BD2_ctcf` | strong / moderate / weak / none / not_assessable |
+| **BD3** | RAD21 (cohesin) ChIP enrichment | `rad21`, `rad21_fold` -> `BD3_rad21` | strong / moderate / weak / none / not_assessable |
+| **BD4** | chromatin-loop-anchor overlap | `loop_anchor_count` -> `BD4_loop_anchor` | strong / moderate / none / not_assessable |
+
+In the column list, `measured -> graded`: the left name holds the measured value, the right name holds the grade.
+
+**Paper-to-software correspondence for BD4.** The manuscript calls this criterion
+**"loop-anchor engagement (number of loop ends in the window)"**. The software column
+is **`loop_anchor_count`** and the `creditad criteria` table prints it as
+**"loop-anchor overlap"**. All three name the same quantity: the number of loop ends
+falling within the window. The delivered column name is deliberately **not** renamed,
+so records already produced stay readable; this table is the mapping.
+
+BD4 grades depend on the density of the loop file supplied, and HiCCUPS call counts
+differ several-fold between cell lines, so absolute BD4 rates are not comparable
+across cell lines.
 
 These combine into a **D1–D5 evidence tier** by the `max_support_v2` rule, together with a
 human-readable derivation of the branch that fired.

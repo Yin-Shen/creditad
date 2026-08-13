@@ -3,7 +3,7 @@
   "upload_type": "software",
   "license": "MIT",
   "access_right": "open",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CrediTAD is a downstream evidence-audit workflow for already-called Hi-C TAD boundaries. It takes candidate boundaries produced by any caller and attaches to each one a checkable evidence record with four named criteria: cross-caller support (BD1), CTCF ChIP enrichment (BD2), RAD21/cohesin enrichment (BD3) and chromatin-loop-anchor overlap (BD4). An axis that was not measured is recorded as not_assessable and is kept distinct from an axis that was measured and found unenriched. The four fields are combined by a deterministic, inspectable rule (max_support_v2) into a D1-D5 evidence tier, accompanied by a human-readable derivation of the rule that fired. The tier is not a calibrated probability, not a ground-truth label and not a caller ranking; CrediTAD does not call TADs. Demonstrated on GM12878, IMR90 and HepG2 at 25 kb and 10 kb. No accuracy, predictive-tier or cross-cell generalisation claim is made. Absence of CTCF, cohesin or loop-anchor signal at a position is an absence of these measured readouts, never evidence that the boundary is false.",
   "keywords": [
     "Hi-C",
