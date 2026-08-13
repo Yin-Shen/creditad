@@ -142,24 +142,42 @@ frontend is served. The routes are `/api/data/*` (above) and `/api/tadvci/*`
 
 Two of those route groups resolve their inputs from a **development-tree layout**
 (`example_data/multicell`, `backend/extra_mode/chr7_tracks`) rather than this repository's
-`data/` layout, and there is no environment variable to redirect them. To let the server
-see the shipped packages and preview tracks, link them once from the repository root:
+`data/` layout. Since 1.0.1 the evidence-package lookup takes an environment override; the
+Data Manager status lookup still does not, and needs links. Both are measured below.
+
+**Step 1 — the evidence packages, by environment variable (no links needed):**
+
+```bash
+export CREDITAD_PACKAGES_DIR="$PWD/data/multicell"
+export CREDITAD_CHR7_DIR="$PWD/data/chr7_preview_tracks"
+```
+
+Measured on a clean clone with no symlinks present:
+`GET /api/tadvci/multicell_datasets` goes from `{"ok": false, "datasets": []}` to
+`"ok": true` with all **six** packages and candidate counts
+28,259 / 28,476 / 29,513 / 63,860 / 65,157 / 69,479.
+
+**Step 2 — the Data Manager status view, which still needs links.** With only the
+variables above, `GET /api/data/status` still reports **0 of 9** entries present:
+`backend/data_manager.py` resolves the preview tracks from its own two constants and
+reads neither variable. Link them once:
 
 ```bash
 mkdir -p example_data backend/extra_mode
-ln -s ../data/multicell            example_data/multicell
-ln -s ../data/chr7_preview_tracks  example_data/chr7_tracks
+ln -s ../data/chr7_preview_tracks    example_data/chr7_tracks
 ln -s ../../data/chr7_preview_tracks backend/extra_mode/chr7_tracks
 ln -s ../../data/loops               backend/extra_mode/loops
 ```
 
-Measured effect of those links: `GET /api/tadvci/multicell_datasets` goes from
-`{"ok": false, "datasets": []}` to all **six** packages with their candidate counts
-(28,259 / 69,479 / 28,476 / 65,157 / 29,513 / 63,860), and `GET /api/data/status` goes from
-0 to **6 of 9** entries present — the three missing ones are the chr7 `.mcool` maps that are
-not in this repository. This is a packaging wart, disclosed rather than papered over: the
-reproduction path (`scripts/reproduce_packages.py`, environment-variable driven) does not
-need it, and the CLI does not need it.
+Measured effect of those three links, with the variables already set: `/api/data/status`
+goes from 0 to **6 of 9** entries present — the three still absent are the chr7 `.mcool`
+maps that are not in this repository.
+
+(Numbers above: `rebuild_2026-08-12/software/scripts/d13_verify_env_override_in_repo.py`
+-> `results/d13_env_override_effect.json`.) This is a packaging wart, disclosed rather
+than papered over, and now half removed: the reproduction path
+(`scripts/reproduce_packages.py`, environment-variable driven) needs none of it, and the
+CLI needs none of it.
 
 ### Tier 3 — archived to Zenodo
 
