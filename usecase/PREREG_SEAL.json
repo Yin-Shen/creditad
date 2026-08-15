@@ -1,0 +1,47 @@
+{
+  "prereg_file": "/home/coder/TAD/creditad/rebuild_2026-08-12/usecase/PREREGISTERED_RULE.md",
+  "written_utc": "2026-08-15T02:38:00Z",
+  "sha256": "71e963c8068c5332d6646433a0e1840b6d55623e15a76b0a6049600eb20c0cc0",
+  "bytes": 12390,
+  "ledger_copies": [
+    "/home/coder/TAD/creditad/rebuild_2026-08-12/ledger/PREREGISTERED_RULE_20260815T023800Z.md",
+    "/home/coder/TAD/creditad/rebuild_2026-08-12/ledger/PREREGISTERED_RULE.md"
+  ],
+  "statement": "Written and hashed before any query against any annotation.tsv candidate row. Only schema-level inspection (column headers, column domains, row counts, engine source) preceded it.",
+  "pre_rule_inspection_performed": [
+    "annotation.tsv header (38 column names) in GM12878_10kb",
+    "row counts of all six packages (sum 284744)",
+    "domain of chrom / D_tier / resolution_bp / vote_tol_bp / loop_window_bp / chip_window_bp / tier_rule_version",
+    "backend/tad_vci/graded_evidence.py combine_tier, grade_votes, grade_fold, grade_loop",
+    "manifest.json of GM12878_10kb"
+  ],
+  "no_locus_filtering_before_prereg": true,
+  "amended_utc": "2026-08-15T02:51:23Z",
+  "sha256_after_amendment": "05b2f6be4f2e87d18818413735afc84df68de3e12e421cb20a2dc33b83135978",
+  "amendment_note": "append-only note recording the ClinVar inner-bound observation; no rule text above section 7 changed",
+  "amended_2_utc": "2026-08-15T05:18:05Z",
+  "sha256_after_amendment_2": "1be02799aeab779f3e5da9ec038916ca54ede3c5c18d72d7b1f89b54969d58e9",
+  "bytes_after_amendment_2": 19036,
+  "amendment_2_note": "append-only correction of the header's 'before the first query' claim to 'before any locus-level query', with the verbatim pre-seal command list recovered from the session execution log; no rule text above section 7 changed, nothing re-run",
+  "statement_correction": "The original 'statement' field above is retained verbatim as written at seal time and is now known to be too strong: aggregate reads of the six annotation.tsv files (row counts, column domains, and the GM12878 10 kb D_tier value counts) DID precede the seal. Corrected claim: written before any locus-level query touched the candidate tables. See PREREGISTERED_RULE.md section 7, amendment 2026-08-15T05:18:05Z.",
+  "amendment_history": [
+    {
+      "utc": "2026-08-15T02:38:00Z",
+      "event": "sealed",
+      "sha256": "71e963c8068c5332d6646433a0e1840b6d55623e15a76b0a6049600eb20c0cc0",
+      "bytes": 12390
+    },
+    {
+      "utc": "2026-08-15T02:51:23Z",
+      "event": "amendment 1 \u2014 ClinVar inner-bound observation",
+      "sha256": "05b2f6be4f2e87d18818413735afc84df68de3e12e421cb20a2dc33b83135978"
+    },
+    {
+      "utc": "2026-08-15T05:18:05Z",
+      "event": "amendment 2 \u2014 header claim corrected to 'before any locus-level query'",
+      "sha256": "1be02799aeab779f3e5da9ec038916ca54ede3c5c18d72d7b1f89b54969d58e9",
+      "bytes": 19036
+    }
+  ],
+  "pre_seal_inspection_verbatim_source": "execution_log, frame 48536911, cells 4,5,7,8,9,10,12 (02:33:07-02:34:51Z)"
+}

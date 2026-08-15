@@ -1,0 +1,20 @@
+{
+  "source_rank_used": 1,
+  "source_name": "ClinVar variant_summary.txt.gz (NCBI, tab-delimited full release)",
+  "url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz",
+  "md5_url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz.md5",
+  "retrieved_utc": "2026-08-15T02:39:17Z",
+  "http_status": 200,
+  "bytes": 441836319,
+  "sha256": "44d47173c6f786a442df0503e2758918e26e9d6c276e4f15f40c71d633596e4b",
+  "md5": "897c38fd97dff56f83f1c7a674eb35f3",
+  "md5_published_by_ncbi": "897c38fd97dff56f83f1c7a674eb35f3",
+  "md5_verified_match": true,
+  "server_last_modified": "Mon, 10 Aug 2026 12:59:47 GMT",
+  "release_note": "NCBI does not embed a version string in variant_summary.txt.gz; the release is identified by the server Last-Modified date and the published MD5, both recorded here.",
+  "assembly_used": "GRCh38 (hg38) as released; NO liftover performed",
+  "filter_applied": "PREREGISTERED_RULE.md section 2",
+  "script": "usecase/scripts/01_build_locus_set.py",
+  "output": "usecase/data/locus_set.tsv",
+  "generated_utc": "2026-08-15T02:54:27Z"
+}
