@@ -20,7 +20,8 @@ INPUTS YOU MUST FETCH YOURSELF (not redistributable: ENCODE/4DN terms + size)
         GM12878  CTCF ENCFF734CUT   RAD21 ENCFF571ZJJ
         IMR90    CTCF ENCFF105FHL   RAD21 ENCFF048PZI
         HepG2    CTCF ENCFF357NFO   RAD21 ENCFF972ODZ
-    $CREDITAD_LOOPS_DIR/<CELL>_HiCCUPS_loops_hg38.bedpe   HiCCUPS loop calls (Zenodo)
+    $CREDITAD_LOOPS_DIR/<CELL>_HiCCUPS_loops_hg38.bedpe   HiCCUPS loop calls -- these SHIP
+        in this repository under data/loops/ (gzipped), so this default already works.
     $CREDITAD_PACKAGES_DIR/<CELL>_<RES>kb/   the delivered packages -- these SHIP in this
         repository under data/multicell/ (gzipped), so this default already works.
     $CREDITAD_LOOPS_DIR                      HiCCUPS loop calls -- also shipped, under

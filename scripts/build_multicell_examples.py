@@ -41,7 +41,8 @@ CALLERS = ["TopDom", "SpectralTAD", "OnTAD", "MSTD", "arrowhead", "DI"]
 # Raw inputs are NOT redistributed with this repository (ENCODE/4DN licence + size:
 # the six ChIP bigWigs alone are ~2.3 GB). Fetch them by the accessions below and point
 # $CREDITAD_DATA_ROOT at the download directory; see REPRODUCE.md for the exact URLs.
-# Loop calls live in $CREDITAD_LOOPS_DIR (Zenodo archive, ~5 MB).
+# Loop calls live in $CREDITAD_LOOPS_DIR; they ship in this repository under data/loops/
+# (~5 MB, gzipped), so the default already works.
 LOOPS = Path(os.environ.get("CREDITAD_LOOPS_DIR", ROOT / "data" / "loops"))
 
 CELLS = {

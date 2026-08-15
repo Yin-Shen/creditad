@@ -44,8 +44,11 @@ reproduces **all six packages exactly: 38/38 columns, grade agreement 1.000000 o
 CTCF and RAD21 axes, tier agreement 1.000000**. Both facts are measured, and they are
 why this document keeps repeating the distinction.
 
-The matching chr7 `.mcool` contact maps (42–91 MB each) are **not** in the repository —
-they exceed GitHub's file-size thresholds — and are in the Zenodo archive.
+The matching chr7 `.mcool` contact maps (42.1, 48.3 and 90.8 MB) are **not** in the
+repository — they exceed the repository's file-size policy — and ship inside the desktop
+builds attached to the [v1.0.1
+release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1), under
+`resources/example_data/chr7_tracks/`.
 
 ### Tier 2 — retrieved from ENCODE / 4DN by accession
 
@@ -103,7 +106,8 @@ Two levels of automation, and the difference matters:
   the body, not the status. `POST /api/data/download` on one of them returns **HTTP 400**
   naming the directory to place it in. Six of the nine (the chr7 CTCF and RAD21 bigWigs)
   ship in this repository under `data/chr7_preview_tracks/`; the three chr7 `.mcool` contact
-  maps do not (42–91 MB each) and are in the Zenodo archive.
+  maps do not (42.1, 48.3 and 90.8 MB) and ship inside the desktop builds attached to the
+  v1.0.1 release, under `resources/example_data/chr7_tracks/`.
 - **Optional full-genome ENCODE/4DN tracks (the table above)** — **listed, never fetched.**
   `GET /api/data/catalog` returns each accession with its size, the exact folder to place it
   in, and the source URL (`https://www.encodeproject.org/files/<ACC>/@@download/<ACC>.bigWig`
@@ -181,11 +185,21 @@ than papered over, and now half removed: the reproduction path
 (`scripts/reproduce_packages.py`, environment-variable driven) needs none of it, and the
 CLI needs none of it.
 
-### Tier 3 — archived to Zenodo
+### Tier 3 — not in the repository tree
 
-A snapshot of this repository at the tagged release, plus the large files that cannot go
-in git: the three chr7 `.mcool` contact maps and the raw per-caller call sets. The Zenodo
-DOI is minted at release and recorded in `CITATION.cff` and `.zenodo.json`.
+This repository, at its tagged releases, is the single home of the code and of the data
+that ships with it. There is no separate archive deposit and no DOI. Two classes of file
+are not in the tree:
+
+- **The three chr7 `.mcool` contact maps** (42.1, 48.3 and 90.8 MB) exceed the
+  repository's file-size policy. They ship inside the desktop builds attached to the
+  [v1.0.1 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1), under
+  `resources/example_data/chr7_tracks/`.
+- **The raw per-caller call sets** the packages were built from are not redistributed.
+  Each package manifest records the call set it was built from by path and SHA-256
+  (`source_percaller`, `source_percaller_sha256`), and the per-caller boundary BEDs
+  derived from it ship under `data/multicell/<CELL>_<RES>/`, one file per caller, with
+  row counts matching the manifest's `per_caller_boundary_counts` exactly.
 
 ## Running it
 

@@ -97,6 +97,9 @@ backend/validate_bigwig.py  genome-build guard for supplied tracks
 backend/tests/              pytest suite
 scripts/                    package regeneration and reproduction scripts
 docs/                       the six-package reproduction report for this release
+usecase/                    pre-registered ClinVar reading demonstration (rule, seal,
+                            scripts, outputs) -- see usecase/README.md
+figures/source_data/        source data + export script for the published Hi-C panel
 ```
 
 ## Data
@@ -113,8 +116,18 @@ endpoints (`/api/data/status`, `/api/data/catalog`, `/api/data/verify`) report w
 are present, re-hash the shipped chr7 assets against stored MD5s, and give the accession,
 size and destination folder for each track you still need -- they never fetch the
 full-genome ENCODE files. A CLI-only install has no download path at all; you retrieve the
-tracks from ENCODE yourself. Large binaries and the release snapshot are archived on
-Zenodo.
+tracks from ENCODE yourself.
+
+**This repository is the single home of the code and of the data that ships with it.**
+There is no separate archive deposit and no DOI. Two classes of file are deliberately not
+in this tree: the three chr7 `.mcool` contact maps (42.1, 48.3 and 90.8 MB), which exceed
+the repository's file-size policy and ship instead inside the desktop builds attached to
+the [v1.0.1 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1) under
+`resources/example_data/chr7_tracks/`; and the raw per-caller call sets, which are not
+redistributed — each package manifest records the call set it was built from by path and
+SHA-256, and the per-caller boundary BEDs derived from it ship here under
+`data/multicell/<CELL>_<RES>/`, one file per caller, with row counts matching the
+manifest's per-caller counts exactly.
 
 Full three-tier breakdown, including exactly what is and is not checksum-verified:
 [DATA_POLICY.md](DATA_POLICY.md). Accessions and the reproduction procedure:
@@ -126,6 +139,25 @@ Full three-tier breakdown, including exactly what is and is not checksum-verifie
 every column against the shipped ones. Verified 2026-08-12 across all six packages
 (284,744 boundaries): **38/38 columns identical, tier agreement 1.000000**, with repeat
 runs byte-identical. See [REPRODUCE.md](REPRODUCE.md).
+
+## Availability
+
+This repository, at tagged release **v1.0.1**, is the single home of the code and of the
+data that ships with it; there is no separate archive deposit and no DOI. It contains the
+package, the test suite, the six evidence tables, the candidate and per-caller BEDs, the
+package manifests, the HiCCUPS loop calls and `scripts/reproduce_packages.py`. Install
+with `pip install .` for the library and command-line interface, or `pip install
+'.[server]'` to add the local HTTP/JSON API service. Desktop application builds are
+distributed as assets of the v1.0.1 release — an AppImage for Linux, and an installer and
+a portable archive for Windows — each with a published SHA-256 checksum. Python >= 3.10.
+
+The ChIP-seq tracks the evidence tables were built from are ENCODE files (GRCh38, fold
+change over control), retrieved by accession from
+`https://www.encodeproject.org/files/<ACCESSION>/`: GM12878 CTCF `ENCFF734CUT` and RAD21
+`ENCFF571ZJJ`; IMR90 CTCF `ENCFF105FHL` and RAD21 `ENCFF048PZI`; HepG2 CTCF `ENCFF357NFO`
+and RAD21 `ENCFF972ODZ`. The Hi-C matrices the callers were run on are 4DN files
+`4DNFIXP4QG5B` (GM12878), `4DNFIJTOIGOI` (IMR90) and `4DNFIS6HAUPP` (HepG2), needed only
+to re-run the upstream callers.
 
 ## Citation
 
