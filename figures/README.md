@@ -37,7 +37,7 @@ colour-scale rule the application uses.
 The exporter reads the GM12878 chr7 multi-resolution cooler
 (`GM12878_chr7_hg38.mcool`, 90.8 MB). **That file is not in this repository** — it exceeds
 the file-size policy and ships inside the desktop builds attached to the
-[v1.0.1 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1), under
+[v1.0.2 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2), under
 `resources/example_data/chr7_tracks/`.
 
 `export_hic_matrix.py` is shipped **verbatim as it ran**, so its checksum above is

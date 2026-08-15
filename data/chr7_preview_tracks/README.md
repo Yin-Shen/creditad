@@ -14,4 +14,4 @@ For reproduction, fetch the genome-wide tracks — see ../../REPRODUCE.md.
 
 The matching chr7 .mcool contact maps are not in this repository (42.1, 48.3 and
 90.8 MB, above the repository's file-size policy); they ship inside the desktop builds
-attached to the v1.0.1 release, under resources/example_data/chr7_tracks/.
+attached to the v1.0.2 release, under resources/example_data/chr7_tracks/.
