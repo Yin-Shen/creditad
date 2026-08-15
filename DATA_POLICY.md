@@ -66,7 +66,7 @@ for an absent file it returns `{"verified": false, "reason": "File not found"}` 
 both cases, so read the body. `POST /api/data/download` returns **HTTP 400** with the
 directory to place the file in. Six of the nine (the chr7 CTCF and RAD21 bigWigs) are in
 `data/chr7_preview_tracks/`; the three chr7 `.mcool` maps are not (42.1, 48.3 and 90.8 MB)
-and ship inside the desktop builds attached to the v1.0.1 release, under
+and ship inside the desktop builds attached to the v1.0.2 release, under
 `resources/example_data/chr7_tracks/`.
 
 For the full-genome tracks the catalog gives each accession, its size, the destination
@@ -94,7 +94,7 @@ that ships with it. There is no separate archive deposit and no DOI.
 
 - **The three chr7 `.mcool` contact maps** (42.1, 48.3 and 90.8 MB — above the
   repository's file-size policy, which is why they are not in tier 1) ship inside the
-  desktop builds attached to the v1.0.1 release, under
+  desktop builds attached to the v1.0.2 release, under
   `resources/example_data/chr7_tracks/`.
 - **The raw per-caller call sets** the packages were built from are not redistributed.
   Each package manifest records the call set by path and SHA-256, and the per-caller

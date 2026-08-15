@@ -122,7 +122,7 @@ tracks from ENCODE yourself.
 There is no separate archive deposit and no DOI. Two classes of file are deliberately not
 in this tree: the three chr7 `.mcool` contact maps (42.1, 48.3 and 90.8 MB), which exceed
 the repository's file-size policy and ship instead inside the desktop builds attached to
-the [v1.0.1 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1) under
+the [v1.0.2 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2) under
 `resources/example_data/chr7_tracks/`; and the raw per-caller call sets, which are not
 redistributed — each package manifest records the call set it was built from by path and
 SHA-256, and the per-caller boundary BEDs derived from it ship here under
@@ -142,13 +142,13 @@ runs byte-identical. See [REPRODUCE.md](REPRODUCE.md).
 
 ## Availability
 
-This repository, at tagged release **v1.0.1**, is the single home of the code and of the
+This repository, at tagged release **v1.0.2**, is the single home of the code and of the
 data that ships with it; there is no separate archive deposit and no DOI. It contains the
 package, the test suite, the six evidence tables, the candidate and per-caller BEDs, the
 package manifests, the HiCCUPS loop calls and `scripts/reproduce_packages.py`. Install
 with `pip install .` for the library and command-line interface, or `pip install
 '.[server]'` to add the local HTTP/JSON API service. Desktop application builds are
-distributed as assets of the v1.0.1 release — an AppImage for Linux, and an installer and
+distributed as assets of the v1.0.2 release — an AppImage for Linux, and an installer and
 a portable archive for Windows — each with a published SHA-256 checksum. Python >= 3.10.
 
 The ChIP-seq tracks the evidence tables were built from are ENCODE files (GRCh38, fold
@@ -167,14 +167,16 @@ See [CITATION.cff](CITATION.cff).
 
 MIT — see [LICENSE](LICENSE).
 
-## Desktop application (v1.0.1)
+## Desktop application
 
-Pre-built desktop binaries are attached to the [v1.0.1
-release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.1): a Linux AppImage, a
-Windows NSIS installer and a Windows portable zip. All three embed the same backend as
-this repository (identical SHA-256 for every shipped `.py`) and their own Python runtime,
-so no separate Python installation is needed. Verify a download against the SHA-256 in
-the release notes before running it.
+Pre-built desktop binaries are attached to the [v1.0.2
+release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2): a Linux AppImage, a
+Windows NSIS installer and a Windows portable zip. They are the same binaries that were
+attached to v1.0.1, carried forward unchanged — each has the SHA-256 it had there, and the
+portable archive keeps its build-time filename `CrediTAD-Windows-1.0.1.zip`. All three
+embed the same backend as this repository (identical SHA-256 for every shipped `.py`) and
+their own Python runtime, so no separate Python installation is needed. Verify a download
+against the SHA-256 in the release notes before running it.
 
 The Linux AppImage was built and started here. The Windows installer was cross-built on
 Linux and confirmed working on Windows by the authors; no Windows version matrix was
