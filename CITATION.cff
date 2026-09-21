@@ -13,7 +13,7 @@ type: software
 license: MIT
 version: "1.0.3"
 repository-code: "https://github.com/Yin-Shen/creditad"
-date-released: "2026-08-15"
+date-released: "2026-09-21"
 authors:
   - family-names: "Yang"
     given-names: "Zhongxin"
@@ -21,6 +21,13 @@ authors:
   - family-names: "Chen"
     given-names: "Tong"
     affiliation: "School of Biomedical Engineering, Anhui Medical University, Hefei 230032, Anhui, China"
+  - family-names: "Xu"
+    given-names: "Guangcheng"
+    affiliation: "School of Biomedical Engineering, Anhui Medical University, Hefei 230032, Anhui, China"
+  - family-names: "Liu"
+    given-names: "Weixu"
+    email: "wxliu@ahmu.edu.cn"
+    affiliation: "School of Medical Humanities, Anhui Medical University, Hefei 230032, Anhui, China"
   - family-names: "Shen"
     given-names: "Yin"
     orcid: "https://orcid.org/0000-0001-7002-4022"
