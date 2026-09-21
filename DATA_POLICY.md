@@ -12,7 +12,7 @@ Every size below was measured from the files themselves.
 | package manifests | `data/multicell/<CELL>_<RES>/manifest.json` | 10 kB |
 | HiCCUPS loop calls (BD4 input), 3 cell lines | `data/loops/*.bedpe.gz` | 1.6 MB gz (4.9 MB raw) |
 | chr7 **preview** ChIP tracks | `data/chr7_preview_tracks/*.bigWig` | 31.6 MB |
-| source, tests, scripts, metadata, reproduction report | `backend/`, `scripts/`, `docs/`, root | 1.2 MB |
+| source, tests, scripts, metadata | `backend/`, `scripts/`, root | 1.2 MB |
 
 Tables and BEDs ship gzipped. Raw they are 169 MB, which is not appropriate for git;
 gzip is lossless and `pandas.read_csv` reads `.gz` directly, so no downstream code changes.

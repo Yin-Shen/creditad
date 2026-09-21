@@ -9,7 +9,6 @@ include REPRODUCE.md
 include DATA_POLICY.md
 include CITATION.cff
 include LICENSE
-include Dockerfile
 include requirements.txt
 include requirements.lock.txt
 include pyproject.toml

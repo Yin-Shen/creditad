@@ -87,7 +87,8 @@ creditad criteria
 ## Repository layout
 
 ```
-data/multicell/             six evidence tables + candidate/caller BEDs (gzipped)
+data/multicell/             six evidence tables + candidate/caller BEDs (gzipped), v1.0
+data/multicell_v1.1/        the same tables with gap/blacklist positions not_assessable
 data/loops/                 HiCCUPS loop calls (BD4 input)
 data/chr7_preview_tracks/   chr7 display tracks -- NOT analysis inputs
 backend/tad_vci/            evidence engine, tier rule, CLI
@@ -95,11 +96,10 @@ backend/builtin_callers_v2/ optional pure-Python detectors (development only)
 backend/mcool_bed.py        bigWig / loop-call readers used by the annotation path
 backend/validate_bigwig.py  genome-build guard for supplied tracks
 backend/tests/              pytest suite
-scripts/                    package regeneration and reproduction scripts
-docs/                       the six-package reproduction report for this release
+scripts/                    reproduce_packages.py (regenerate the six tables and compare
+                            every column) and mask_and_retier.py (derive the v1.1 tables)
 usecase/                    pre-registered ClinVar reading demonstration (rule, seal,
                             scripts, outputs) -- see usecase/README.md
-figures/source_data/        source data + export script for the published Hi-C panel
 ```
 
 ## Data
