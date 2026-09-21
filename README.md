@@ -98,8 +98,6 @@ backend/validate_bigwig.py  genome-build guard for supplied tracks
 backend/tests/              pytest suite
 scripts/                    reproduce_packages.py (regenerate the six tables and compare
                             every column) and mask_and_retier.py (derive the v1.1 tables)
-usecase/                    pre-registered ClinVar reading demonstration (rule, seal,
-                            scripts, outputs) -- see usecase/README.md
 ```
 
 ## Data
