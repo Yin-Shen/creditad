@@ -1,0 +1,13 @@
+package,chrom,pos,votes,BD1_caller_support,BD2_ctcf,BD3_rad21,BD4_loop_anchor,D_tier,chrom_size_hg38,reason
+GM12878_25kb,4,190225000,2,weak,none,none,none,D1,190214555.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,7,159350000,6,strong,none,none,none,D3,159345973.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,7,159375000,2,weak,not_assessable,not_assessable,none,D1,159345973.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,11,135100000,5,strong,none,strong,none,D5,135086622.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,12,133300000,5,strong,none,none,none,D3,133275309.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,13,114375000,5,strong,none,none,none,D3,114364328.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,19,58625000,5,strong,none,none,none,D3,58617616.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,21,46725000,5,strong,none,none,none,D3,46709983.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,22,50825000,5,strong,none,none,none,D3,50818468.0,pos_at_or_beyond_chromosome_end
+GM12878_25kb,X,156050000,6,strong,none,none,none,D3,156040895.0,pos_at_or_beyond_chromosome_end
+HepG2_10kb,7,159350000,5,strong,none,none,none,D3,159345973.0,pos_at_or_beyond_chromosome_end
+HepG2_10kb,11,135090000,5,strong,strong,strong,none,D5,135086622.0,pos_at_or_beyond_chromosome_end

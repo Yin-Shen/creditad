@@ -142,14 +142,17 @@ runs byte-identical. See [REPRODUCE.md](REPRODUCE.md).
 
 ## Availability
 
-This repository, at tagged release **v1.0.2**, is the single home of the code and of the
+This repository, at tagged release **v1.0.3**, is the single home of the code and of the
 data that ships with it; there is no separate archive deposit and no DOI. It contains the
 package, the test suite, the six evidence tables, the candidate and per-caller BEDs, the
-package manifests, the HiCCUPS loop calls and `scripts/reproduce_packages.py`. Install
+package manifests, the HiCCUPS loop calls and `scripts/reproduce_packages.py`; release v1.1 of
+the evidence tables, with gap and blacklist positions recorded as `not_assessable`, ships under
+`data/multicell_v1.1/` with `scripts/mask_and_retier.py` and its impact tables. Install
 with `pip install .` for the library and command-line interface, or `pip install
-'.[server]'` to add the local HTTP/JSON API service. Desktop application builds are
-distributed as assets of the v1.0.2 release — an AppImage for Linux, and an installer and
-a portable archive for Windows — each with a published SHA-256 checksum. Python >= 3.10.
+'.[server]'` to add the local HTTP/JSON API service. Desktop application builds — an
+AppImage for Linux, and an installer and a portable archive for Windows — are attached to the
+v1.0.2 release, unchanged since v1.0.1; their SHA-256 digests are listed in
+`RELEASE_ASSETS.sha256`. Python >= 3.10.
 
 The ChIP-seq tracks the evidence tables were built from are ENCODE files (GRCh38, fold
 change over control), retrieved by accession from
@@ -172,8 +175,16 @@ MIT — see [LICENSE](LICENSE).
 Pre-built desktop binaries are attached to the [v1.0.2
 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2): a Linux AppImage, a
 Windows NSIS installer and a Windows portable zip. They are the same binaries that were
-attached to v1.0.1, carried forward unchanged — each has the SHA-256 it had there, and the
-portable archive keeps its build-time filename `CrediTAD-Windows-1.0.1.zip`. All three
+attached to v1.0.1, carried forward unchanged, and they are not re-uploaded for later tags;
+the portable archive keeps its build-time filename `CrediTAD-Windows-1.0.1.zip`. Their SHA-256
+digests are listed in `RELEASE_ASSETS.sha256`:
+
+| file | size | SHA-256 |
+|---|---|---|
+| `CrediTAD-Linux.AppImage` | 536,584,356 B | `a991dc39b7477b10d28a954e513cd6b7c54e6bdea5ae8c81d000bda604120f4e` |
+| `CrediTAD-Windows-Setup.exe` | 452,125,658 B | `a7b162421fc6171f27a52dad658e437215e98df3d037daa2d8ac8e1726688d81` |
+| `CrediTAD-Windows-1.0.1.zip` | 512,613,927 B | `9f5f2c2649a515d9a116ef251fd990e7a9c65c48c9766c7007cd71c247c3c57c` |
+ All three
 embed the same backend as this repository (identical SHA-256 for every shipped `.py`) and
 their own Python runtime, so no separate Python installation is needed. Verify a download
 against the SHA-256 in the release notes before running it.

@@ -1,0 +1,30 @@
+{
+  "seed": 20260825,
+  "n_rows_v10": 284744,
+  "n_rows_v11": 284732,
+  "n_removed_off_chromosome_end": 12,
+  "n_masked": 4474,
+  "n_masked_gap_total": 4366,
+  "n_masked_blacklist_total": 416,
+  "n_masked_both": 308,
+  "n_masked_rows_tier_changed": 149,
+  "pct_masked_rows_tier_changed": 3.33,
+  "tier_totals_v10": {
+    "D1": 97253,
+    "D2": 14028,
+    "D3": 99172,
+    "D4": 43179,
+    "D5": 31112
+  },
+  "tier_totals_v11": {
+    "D1": 97345,
+    "D2": 13953,
+    "D3": 99193,
+    "D4": 43147,
+    "D5": 31094
+  },
+  "na_rows_v10": 1,
+  "na_rows_v11": 4474,
+  "na_criteria_triggers_v10": 2,
+  "na_criteria_triggers_v11": 8948
+}

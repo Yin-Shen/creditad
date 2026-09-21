@@ -1,0 +1,8 @@
+package,candidates,off_chrom_end,off_end_graded_none_on_bd2,in_assembly_gap,gap_graded_none_on_bd2,gap_graded_not_assessable,in_blacklist,blacklist_graded_none_on_bd2,blacklist_graded_not_assessable,gap_and_blacklist_overlap,rows_with_any_not_assessable
+GM12878_25kb,28259,10,9,538,479,0,76,75,0,57,1
+GM12878_10kb,69479,0,0,1175,1058,0,131,128,0,100,0
+IMR90_25kb,28476,0,0,424,362,0,40,39,0,30,0
+IMR90_10kb,65157,0,0,934,816,0,93,91,0,62,0
+HepG2_25kb,29513,0,0,395,335,0,20,18,0,15,0
+HepG2_10kb,63860,2,1,900,775,0,56,53,0,44,0
+TOTAL,284744,12,10,4366,3825,0,416,404,0,308,1

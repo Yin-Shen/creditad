@@ -11,7 +11,7 @@ abstract: >-
   ground-truth label. CrediTAD does not call TADs and does not rank callers.
 type: software
 license: MIT
-version: "1.0.2"
+version: "1.0.3"
 repository-code: "https://github.com/Yin-Shen/creditad"
 date-released: "2026-08-15"
 authors:

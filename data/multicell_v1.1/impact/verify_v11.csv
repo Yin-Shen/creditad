@@ -1,0 +1,8 @@
+package,n_rows_v11,manifest_n_candidates,rows_match_manifest,data_version,bd1_mismatch_v10,bd1_mismatch_v11,tier_mismatch_v10,tier_mismatch_v11,na_col_mismatch_v10,na_col_mismatch_v11,manifest_tier_counts_match,rows_off_chrom_end_remaining,rows_in_gap_or_blacklist,gap_or_blacklist_still_graded_on_bd2_or_bd3,annotation_lines_changed_vs_v10,union_bed_lines,tier_bed_lines,bed_lines_match_rows,caller_beds_sha256_identical
+GM12878_25kb,28249,28249,True,1.1,0,0,0,0,0,0,True,0,557,0,557,28249,28249,True,True
+GM12878_10kb,69479,69479,True,1.1,0,0,0,0,0,0,True,0,1206,0,1206,69479,69479,True,True
+IMR90_25kb,28476,28476,True,1.1,0,0,0,0,0,0,True,0,434,0,434,28476,28476,True,True
+IMR90_10kb,65157,65157,True,1.1,0,0,0,0,0,0,True,0,965,0,965,65157,65157,True,True
+HepG2_25kb,29513,29513,True,1.1,0,0,0,0,0,0,True,0,400,0,400,29513,29513,True,True
+HepG2_10kb,63858,63858,True,1.1,0,0,0,0,0,0,True,0,912,0,912,63858,63858,True,True
+TOTAL,284732,284732,True,,0,0,0,0,0,0,True,0,4474,0,4474,284732,284732,True,True

@@ -1,0 +1,117 @@
+{
+  "name": "GM12878_10kb_multicaller_union",
+  "data_version": "1.1",
+  "cell_line": "GM12878",
+  "assembly": "hg38",
+  "resolution_bp": 10000,
+  "role": "CrediTAD downstream evidence-card demo — boundaries NOT called by CrediTAD",
+  "candidate_definition": "deduplicated union of the six panel callers' domain endpoints, snapped to the bin grid; no ConsensusTAD involved",
+  "consensus_used": false,
+  "upstream_pipeline": "local multi-caller run (OnTAD level-2, SpectralTAD level-1, TopDom, MSTD v1, Arrowhead Juicer 1.22.01 with SCALE balancing, DI domaincaller); cooler ICE for Hi-C. Parameter CHOICES follow Li et al. Nat Methods 2026 where obtainable; this is a local panel, not a byte-reproduction of TADShop. Method-level limitations: docs/MEASURED_LIMITATIONS.md.",
+  "source_percaller": "calling_repro_final/GM12878_10kb/percaller.tsv",
+  "source_percaller_sha256": "5cde679bab01e8d47257494632e3da811661c129937dcf853080e683311fe592",
+  "n_candidates": 69479,
+  "per_caller_boundary_counts": {
+    "TopDom": 25677,
+    "SpectralTAD": 30855,
+    "OnTAD": 5903,
+    "MSTD": 12046,
+    "arrowhead": 16821,
+    "DI": 15281
+  },
+  "bd1_panel": [
+    "TopDom",
+    "SpectralTAD",
+    "OnTAD",
+    "MSTD",
+    "arrowhead",
+    "DI"
+  ],
+  "bd1_n_methods": 6,
+  "chip_tracks": {
+    "CTCF": "ENCFF734CUT",
+    "RAD21": "ENCFF571ZJJ"
+  },
+  "hic_matrix": {
+    "accession": "4DNFIXP4QG5B",
+    "source": "4D Nucleome",
+    "url": "https://data.4dnucleome.org/files-processed/4DNFIXP4QG5B/",
+    "assembly": "hg38",
+    "note": "Hi-C multi-resolution matrix the caller panel was run on; not required to reproduce this package's evidence table."
+  },
+  "chip_output_type": "fold change over control",
+  "cross_cell_comparable": true,
+  "loop_calls": {
+    "caller": "HiCCUPS",
+    "assembly": "hg38",
+    "loops_in_shipped_file": 9445,
+    "file": "backend/extra_mode/loops/GM12878_HiCCUPS_loops_hg38.bedpe",
+    "file_md5": "74199e631e43f6f07094013067650f07",
+    "source": {
+      "repository": "NCBI GEO",
+      "accession": "GSE63525",
+      "file": "GSE63525_GM12878_primary+replicate_HiCCUPS_looplist.txt.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63525/suppl/GSE63525_GM12878_primary%2Breplicate_HiCCUPS_looplist.txt.gz",
+      "citation": "Rao et al., Cell 2014",
+      "assembly": "hg19",
+      "loops_upstream": 9448,
+      "md5_uncompressed": "d5c1cc8347e1eef3f5042cc4c78e21c4",
+      "md5_match": "exact, whole file, against the hg19 copy in backend/extra_mode/loops/GM12878_HiCCUPS_loops_hg19.txt"
+    },
+    "transform": "hg19 -> hg38 with pyliftover and UCSC hg19ToHg38.over.chain.gz; both loop-anchor midpoints mapped, anchor width preserved (GM12878) or all four endpoints mapped independently (IMR90); loops whose anchors do not map are dropped",
+    "transform_reproduced": "byte-identical; 3 of 9,448 loops dropped as unmappable",
+    "verified_on": "2026-08-25"
+  },
+  "tier_counts": {
+    "D1": 29286,
+    "D3": 20603,
+    "D4": 8900,
+    "D5": 6272,
+    "D2": 4418
+  },
+  "caveats": [],
+  "reference_note": "TAD boundaries have no ground truth; this package is caller output graded by evidence, not a validated boundary set.",
+  "masking": {
+    "applied": true,
+    "referee_item": "referee 2, Major 5",
+    "description": "v1.1 mappability masking (referee 2, Major 5). A candidate whose bin start falls inside an hg38 assembly gap or inside the ENCODE hg38 blacklist has its CTCF (BD2) and cohesin (BD3) grades set to not_assessable, because at such a position the ChIP readout is unmeasurable rather than measured-negative. BD1 (cross-caller support) and BD4 (loop anchors) are left as graded: neither depends on ChIP mappability at the candidate coordinate. D_tier and not_assessable_criteria are recomputed for masked rows with the shipped combine_tier; all other rows are byte-identical to v1.0. The raw ctcf/rad21/fold/null-percentile columns keep their v1.0 values so the withheld measurement stays inspectable; the grade, not the number, is what is withheld.",
+    "predicate": "point-in-interval on the candidate `pos`, half-open [start, end); identical to review/referee2/r2_04_unmappable_and_windows.py",
+    "reference_files": {
+      "assembly_gap": "/home/coder/_shared_data/raw/reference/hg38/hg38_gap_regions.bed",
+      "encode_blacklist": "/home/coder/_shared_data/raw/reference/blacklist/ENCFF356LFX.bed.gz",
+      "chrom_sizes": "/home/coder/_shared_data/raw/reference/hg38/hg38.chrom.sizes",
+      "blacklist_accession": "ENCFF356LFX"
+    },
+    "criteria_masked": [
+      "BD2",
+      "BD3"
+    ],
+    "criteria_left_graded": [
+      "BD1",
+      "BD4"
+    ],
+    "criteria_left_graded_reason": "BD1 is caller agreement on the Hi-C map and BD4 is loop-anchor overlap in the supplied loop file; neither is a ChIP measurement at the candidate coordinate, so neither is invalidated by low mappability there.",
+    "n_rows_masked": 1206,
+    "n_rows_masked_assembly_gap_only": 1075,
+    "n_rows_masked_blacklist_only": 31,
+    "n_rows_masked_both": 100,
+    "n_rows_removed_off_chromosome_end": 0,
+    "raw_signal_columns_retained": true,
+    "engine_caveat": "Masking is applied AFTER graded_evidence.annotate(); the engine itself has no mappability model. Re-running annotate() on this table would regrade the masked axes back to `none`. Reproduce v1.1 with rebuild_2026-08-25_fixes/masking/mask_and_retier.py.",
+    "records_file": "masking_records.tsv",
+    "generator": "rebuild_2026-08-25_fixes/masking/mask_and_retier.py",
+    "seed": 20260825
+  },
+  "supersedes": {
+    "data_version": "1.0",
+    "package_dir": "example_data/multicell/GM12878_10kb",
+    "n_candidates": 69479,
+    "tier_counts": {
+      "D1": 29263,
+      "D3": 20596,
+      "D4": 8911,
+      "D5": 6273,
+      "D2": 4436
+    }
+  }
+}

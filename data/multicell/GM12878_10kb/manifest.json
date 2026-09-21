@@ -3,7 +3,7 @@
   "cell_line": "GM12878",
   "assembly": "hg38",
   "resolution_bp": 10000,
-  "role": "CrediTAD downstream evidence-card demo \u2014 boundaries NOT called by CrediTAD",
+  "role": "CrediTAD downstream evidence-card demo — boundaries NOT called by CrediTAD",
   "candidate_definition": "deduplicated union of the six panel callers' domain endpoints, snapped to the bin grid; no ConsensusTAD involved",
   "consensus_used": false,
   "upstream_pipeline": "local multi-caller run (OnTAD level-2, SpectralTAD level-1, TopDom, MSTD v1, Arrowhead Juicer 1.22.01 with SCALE balancing, DI domaincaller); cooler ICE for Hi-C. Parameter CHOICES follow Li et al. Nat Methods 2026 where obtainable; this is a local panel, not a byte-reproduction of TADShop. Method-level limitations: docs/MEASURED_LIMITATIONS.md.",
@@ -33,7 +33,28 @@
   },
   "chip_output_type": "fold change over control",
   "cross_cell_comparable": true,
-  "loop_calls": "HiCCUPS (GM12878, hg38)",
+  "loop_calls": {
+    "caller": "HiCCUPS",
+    "assembly": "hg38",
+    "loops_in_shipped_file": 9445,
+    "file": "data/loops/GM12878_HiCCUPS_loops_hg38.bedpe.gz",
+    "source": {
+      "repository": "NCBI GEO",
+      "accession": "GSE63525",
+      "file": "GSE63525_GM12878_primary+replicate_HiCCUPS_looplist.txt.gz",
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63525/suppl/GSE63525_GM12878_primary%2Breplicate_HiCCUPS_looplist.txt.gz",
+      "citation": "Rao et al., Cell 2014",
+      "assembly": "hg19",
+      "loops_upstream": 9448,
+      "md5_uncompressed": "d5c1cc8347e1eef3f5042cc4c78e21c4",
+      "md5_match": "exact, whole file, against the hg19 copy in backend/extra_mode/loops/GM12878_HiCCUPS_loops_hg19.txt"
+    },
+    "transform": "hg19 -> hg38 with pyliftover and UCSC hg19ToHg38.over.chain.gz; both loop-anchor midpoints mapped, anchor width preserved (GM12878) or all four endpoints mapped independently (IMR90); loops whose anchors do not map are dropped",
+    "transform_reproduced": "byte-identical; 3 of 9,448 loops dropped as unmappable",
+    "verified_on": "2026-08-25",
+    "file_md5_gz": "989bd12e8ff5b9ce23bccef1330ea497",
+    "file_md5_uncompressed": "74199e631e43f6f07094013067650f07"
+  },
   "tier_counts": {
     "D1": 29263,
     "D3": 20596,

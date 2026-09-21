@@ -1,0 +1,16 @@
+{
+  "total_rows_v11": 284732,
+  "bd1_mismatch_v11": 0,
+  "tier_mismatch_v11": 0,
+  "not_assessable_col_mismatch_v11": 0,
+  "bd1_mismatch_v10_baseline": 0,
+  "tier_mismatch_v10_baseline": 0,
+  "rows_off_chrom_end_remaining": 0,
+  "gap_or_blacklist_still_graded": 0,
+  "annotation_lines_changed_vs_v10": 4474,
+  "all_manifests_match_rows": true,
+  "all_manifest_tier_counts_match": true,
+  "all_caller_beds_identical": true,
+  "all_bed_lines_match_rows": true,
+  "PASS": true
+}
