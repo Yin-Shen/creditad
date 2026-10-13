@@ -52,18 +52,8 @@ def _parse_panel(values: list[str]) -> list[tuple[str, str]]:
     return out
 
 
-def cmd_annotate(args: argparse.Namespace) -> int:
-    from tad_vci.annotate_from_beds import annotate_from_beds
-
-    primary = Path(args.boundaries).expanduser()
-    if not primary.is_file():
-        raise SystemExit(f"--boundaries file not found: {primary}")
-    for label, val in (("--ctcf", args.ctcf), ("--rad21", args.rad21), ("--loops", args.loops)):
-        if val and not Path(val).expanduser().is_file():
-            raise SystemExit(f"{label} file not found: {val}")
-
-    panel = _parse_panel(args.panel)
-    result = annotate_from_beds(
+def _run_annotate(annotate_from_beds, primary: Path, panel, args: argparse.Namespace) -> dict:
+    return annotate_from_beds(
         str(primary),
         method_beds=panel,
         resolution=args.resolution,
@@ -78,6 +68,23 @@ def cmd_annotate(args: argparse.Namespace) -> int:
         origin="user",
         uncalibrated_bands=args.uncalibrated_bands,
     )
+
+
+def cmd_annotate(args: argparse.Namespace) -> int:
+    from tad_vci.annotate_from_beds import annotate_from_beds
+
+    primary = Path(args.boundaries).expanduser()
+    if not primary.is_file():
+        raise SystemExit(f"--boundaries file not found: {primary}")
+    for label, val in (("--ctcf", args.ctcf), ("--rad21", args.rad21), ("--loops", args.loops)):
+        if val and not Path(val).expanduser().is_file():
+            raise SystemExit(f"{label} file not found: {val}")
+
+    panel = _parse_panel(args.panel)
+    try:
+        result = _run_annotate(annotate_from_beds, primary, panel, args)
+    except ValueError as exc:
+        raise SystemExit(f"error: {exc}")
     if args.json:
         print(json.dumps(result, indent=2))
     else:

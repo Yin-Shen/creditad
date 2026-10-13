@@ -1426,7 +1426,7 @@ def detect_TAD_boundaries_tadvci(
 
     # ---- optional BD4 loop-anchor count from a HiCCUPS-style loops file ----
     if len(df) and loops_path and os.path.isfile(loops_path):
-        anchors = _parse_loop_anchors(loops_path)
+        anchors = require_loop_anchors(loops_path)
         def _lc(c, p):
             k = str(c).replace("chr", "")
             return int(np.sum(np.abs(anchors[k] - p) <= tol)) if k in anchors else 0
@@ -1619,11 +1619,17 @@ def _parse_loop_anchors(loops_path: str) -> dict:
     Handles BOTH formats:
       * header form (HiCCUPS .txt): named columns chr1,x1,x2,chr2,y1,y2 (+ extras);
       * headerless 6-column .bedpe: chr1 x1 x2 chr2 y1 y2.
-    Both loop ends are anchors. Chrom keys are normalised to bare numbers ('7', 'X')."""
+    Both loop ends are anchors. Chrom keys are normalised to bare numbers ('7', 'X').
+    Plain or gzip-compressed (.gz). Returns {} for a file it cannot parse; callers that were
+    given a loop file treat {} as an error (see require_loop_anchors)."""
+    import gzip
     import numpy as np
     by: dict[str, list] = {}
     try:
-        with open(loops_path) as _fh:
+        # v1.0.3 opened .gz files as text, failed on the first line, returned {} and so
+        # graded BD4 `none` at every boundary without an error.
+        opener = gzip.open if str(loops_path).endswith(".gz") else open
+        with opener(loops_path, "rt") as _fh:
             first = _fh.readline().rstrip("\n").split("\t")
     except Exception:
         return {}
@@ -1650,6 +1656,21 @@ def _parse_loop_anchors(loops_path: str) -> dict:
     except Exception:
         return {}
     return {k: np.sort(np.asarray(v)) for k, v in by.items()}
+
+
+def require_loop_anchors(loops_path: str) -> dict:
+    """Parse a loop file the user supplied, and refuse one that yields no anchors.
+
+    A supplied loop file that parses to nothing is almost always the wrong format or an
+    unreadable file. Grading BD4 `none` at every boundary from it would record a measured
+    absence that was never measured, so stop instead."""
+    anchors = _parse_loop_anchors(loops_path)
+    if not anchors:
+        raise ValueError(
+            f"loop file {loops_path!r} yielded no loop anchors; expected a HiCCUPS looplist "
+            "or a 6-column BEDPE (chr1 x1 x2 chr2 y1 y2), plain or gzip-compressed. Omit "
+            "--loops to record BD4 as not_assessable instead.")
+    return anchors
 
 
 def _bw_window_signal(bw_path: str, df, resolution: int, flank: int = 25000):

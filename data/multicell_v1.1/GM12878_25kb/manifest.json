@@ -73,9 +73,8 @@
   "reference_note": "TAD boundaries have no ground truth; this package is caller output graded by evidence, not a validated boundary set.",
   "masking": {
     "applied": true,
-    "referee_item": "referee 2, Major 5",
-    "description": "v1.1 mappability masking (referee 2, Major 5). A candidate whose bin start falls inside an hg38 assembly gap or inside the ENCODE hg38 blacklist has its CTCF (BD2) and cohesin (BD3) grades set to not_assessable, because at such a position the ChIP readout is unmeasurable rather than measured-negative. BD1 (cross-caller support) and BD4 (loop anchors) are left as graded: neither depends on ChIP mappability at the candidate coordinate. D_tier and not_assessable_criteria are recomputed for masked rows with the shipped combine_tier; all other rows are byte-identical to v1.0. The raw ctcf/rad21/fold/null-percentile columns keep their v1.0 values so the withheld measurement stays inspectable; the grade, not the number, is what is withheld.",
-    "predicate": "point-in-interval on the candidate `pos`, half-open [start, end); identical to review/referee2/r2_04_unmappable_and_windows.py",
+    "description": "v1.1 mappability masking. A candidate whose bin start falls inside an hg38 assembly gap or inside the ENCODE hg38 blacklist has its CTCF (BD2) and cohesin (BD3) grades set to not_assessable, because at such a position the ChIP readout is unmeasurable rather than measured-negative. BD1 (cross-caller support) and BD4 (loop anchors) are left as graded: neither depends on ChIP mappability at the candidate coordinate. D_tier and not_assessable_criteria are recomputed for masked rows with the shipped combine_tier; all other rows are byte-identical to v1.0. The raw ctcf/rad21/fold/null-percentile columns keep their v1.0 values so the withheld measurement stays inspectable; the grade, not the number, is what is withheld.",
+    "predicate": "point-in-interval on the candidate `pos`, half-open [start, end); identical to the gap and blacklist predicate of r2_04_unmappable_and_windows.py",
     "reference_files": {
       "assembly_gap": "/home/coder/_shared_data/raw/reference/hg38/hg38_gap_regions.bed",
       "encode_blacklist": "/home/coder/_shared_data/raw/reference/blacklist/ENCFF356LFX.bed.gz",

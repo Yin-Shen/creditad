@@ -1,4 +1,4 @@
-"""Referee 2 / Major 5 fix (A1): build the v1.1 multicell packages.
+"""Build the v1.1 multicell packages (mappability masking).
 
 WHAT CHANGES relative to v1.0
   (a) Every candidate whose `pos` falls inside an hg38 assembly gap or inside the ENCODE
@@ -50,7 +50,7 @@ MASK_CRITERIA = ["BD2", "BD3"]
 MASK_COLS = {"BD2": "BD2_ctcf", "BD3": "BD3_rad21"}
 
 MASK_NOTE = (
-    "v1.1 mappability masking (referee 2, Major 5). A candidate whose bin start falls "
+    "v1.1 mappability masking. A candidate whose bin start falls "
     "inside an hg38 assembly gap or inside the ENCODE hg38 blacklist has its CTCF (BD2) "
     "and cohesin (BD3) grades set to not_assessable, because at such a position the ChIP "
     "readout is unmeasurable rather than measured-negative. BD1 (cross-caller support) "
@@ -87,10 +87,9 @@ def build_manifest(pkg: str, man: dict, stats: dict, tier_counts: dict, n_rows: 
     out["tier_counts"] = tier_counts
     out["masking"] = {
         "applied": True,
-        "referee_item": "referee 2, Major 5",
         "description": MASK_NOTE,
         "predicate": "point-in-interval on the candidate `pos`, half-open [start, end); "
-                     "identical to review/referee2/r2_04_unmappable_and_windows.py",
+                     "identical to the gap and blacklist predicate of r2_04_unmappable_and_windows.py",
         "reference_files": {
             "assembly_gap": str(M.GAP_F),
             "encode_blacklist": str(M.BLACKLIST_F),

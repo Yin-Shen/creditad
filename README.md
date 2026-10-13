@@ -76,7 +76,25 @@ creditad annotate \
 
 Omit `--ctcf`, `--rad21` or `--loops` and that axis is recorded as `not_assessable`
 rather than as absent signal. With no `--panel`, BD1 is floored to `weak`: a single
-method cannot express cross-caller agreement.
+method cannot express cross-caller agreement. BED and loop files may be plain or
+gzip-compressed; a loop file that yields no loop anchors stops the run with an error
+(release v1.0.3 and earlier read a gzipped loop file as empty without reporting it).
+
+Quick start, from files that ship in this repository, checked byte for byte against
+the expected output:
+
+```bash
+python examples/quickstart/run_quickstart.py      # prints PASS and exits 0
+```
+
+`examples/reading_records.md` shows how to read the table for a follow-up decision
+(caller support against measured molecular support). A container image can be built
+from the `Dockerfile`:
+
+```bash
+docker build -t creditad:1.0.4 .
+docker run --rm --entrypoint python creditad:1.0.4 examples/quickstart/run_quickstart.py
+```
 
 Print the rules actually compiled into your installed copy:
 
@@ -134,13 +152,13 @@ Full three-tier breakdown, including exactly what is and is not checksum-verifie
 ## Reproducibility
 
 `scripts/reproduce_packages.py` regenerates the six delivered evidence tables and compares
-every column against the shipped ones. Verified 2026-08-12 across all six packages
-(284,744 boundaries): **38/38 columns identical, tier agreement 1.000000**, with repeat
-runs byte-identical. See [REPRODUCE.md](REPRODUCE.md).
+every column against the shipped ones. Verified 2026-08-12, and again on 2026-10-12 with
+release v1.0.4, across all six packages (284,744 boundaries): **38/38 columns identical,
+tier agreement 1.000000**, with repeat runs byte-identical. See [REPRODUCE.md](REPRODUCE.md).
 
 ## Availability
 
-This repository, at tagged release **v1.0.3**, is the single home of the code and of the
+This repository, at tagged release **v1.0.4**, is the single home of the code and of the
 data that ships with it; there is no separate archive deposit and no DOI. It contains the
 package, the test suite, the six evidence tables, the candidate and per-caller BEDs, the
 package manifests, the HiCCUPS loop calls and `scripts/reproduce_packages.py`; release v1.1 of

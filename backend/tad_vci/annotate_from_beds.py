@@ -220,8 +220,8 @@ def annotate_from_beds(
     # graded BD4 at +/-20 kb while the card and BD_SPEC both said 50 kb. Separated
     # 2026-07-29 so the BD1 tolerance can be tuned without moving BD4 underneath it.
     if len(df) and loops_path and os.path.isfile(loops_path):
-        from mcool_bed import _parse_loop_anchors
-        anchors = _parse_loop_anchors(loops_path)
+        from mcool_bed import require_loop_anchors
+        anchors = require_loop_anchors(loops_path)
 
         def _lc(c, p):
             k = str(c).replace("chr", "")

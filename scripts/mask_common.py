@@ -1,8 +1,8 @@
-"""Shared masking predicates for referee-2 Major 5 (A1).
+"""Shared masking predicates for the v1.1 mappability masking.
 
 The gap / blacklist / off-end predicates are lifted VERBATIM in behaviour from
-review/referee2/r2_04_unmappable_and_windows.py so the v1.1 masking targets exactly the
-rows the referee counted (4,366 gap / 416 blacklist / 12 off-end). Nothing is
+r2_04_unmappable_and_windows.py so the v1.1 masking targets exactly the
+rows counted there (4,366 gap / 416 blacklist / 12 off-end). Nothing is
 re-derived here: same three reference files, same point-in-interval test on `pos`,
 same chrom-name normalisation (leading "chr" stripped).
 
