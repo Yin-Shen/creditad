@@ -656,17 +656,55 @@ def _matrix_profile(path) -> dict:
 _SAFE_TAG_RE = re.compile(r"[A-Za-z0-9._-]{1,64}")
 
 
+def _user_data_dir() -> Path:
+    """The per-user data directory sql.py falls back to for its token database:
+    $XDG_DATA_HOME or ~/.local/share on POSIX, %LOCALAPPDATA% on Windows, + CrediTAD."""
+    if os.name == "nt":
+        base = Path(os.environ.get("LOCALAPPDATA") or (Path.home() / "AppData" / "Local"))
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local" / "share"))
+    return base / "CrediTAD"
+
+
+def _dir_writable(path: str) -> bool:
+    return os.access(path, os.W_OK)
+
+
+def relocate_relative_output_dir(raw: str) -> str:
+    """Where a relative results directory goes when the install tree is read-only.
+
+    A relative path resolves against the working directory, which main.py sets to the
+    backend directory at start-up. The Linux AppImage mounts that directory read-only, so
+    the Import page's default "./tad_results" failed with HTTP 400 "Read-only file
+    system". When the working directory is not writable (os.access, the same test sql.py
+    applies to the token database), a relative path is placed under the per-user data
+    directory instead. Absolute paths, and every path when the working directory is
+    writable, are returned unchanged.
+    """
+    candidate = os.path.expanduser(raw.strip())
+    if not candidate or os.path.isabs(candidate):
+        return raw
+    try:
+        cwd = os.getcwd()
+    except OSError:
+        cwd = None
+    if cwd is not None and _dir_writable(cwd):
+        return raw
+    return str(_user_data_dir() / candidate)
+
+
 def _resolved_output_dir(raw: str) -> str:
     """Normalise a caller-chosen results directory and make sure it is usable.
 
     Deliberately NOT confined to a fixed root: this is a local single-user tool and the
     caller (GUI, CLI and the parity test) legitimately names its own output directory.
     What is enforced is that the path is normalised once here and that an unusable one
-    fails as a 400 now, rather than as a 500 deep inside the writer.
+    fails as a 400 now, rather than as a 500 deep inside the writer. A relative path in a
+    read-only install goes under the per-user data directory (relocate_relative_output_dir).
     """
     if not raw.strip():
         raise ValueError("output_dir must not be empty")
-    path = os.path.abspath(os.path.expanduser(raw.strip()))
+    path = os.path.abspath(os.path.expanduser(relocate_relative_output_dir(raw).strip()))
     try:
         os.makedirs(path, exist_ok=True)
     except OSError as exc:

@@ -1209,6 +1209,15 @@ async def handle_tad_run(request):
     hash_tag = data.get('hash_tag', record.get('hash_tag', token[:8]))
     fast_mode = data.get('fast_mode', record.get('fast_mode', True))
     output_dir = data.get('output_dir', './tad_results')
+    if isinstance(output_dir, str):
+        # A relative default inside a read-only install tree (mounted AppImage) cannot be
+        # created; it goes under the per-user data directory, as on /api/tadvci/annotate.
+        try:
+            from tad_vci.api_routes import relocate_relative_output_dir
+        except ImportError as exc:
+            print(f"[tad/run] output_dir used as given; relocation unavailable: {exc}")
+        else:
+            output_dir = relocate_relative_output_dir(output_dir)
     # method_set is validated before task state is mutated. The active default is
     # tadvci; v2 remains an explicit compatibility path and legacy is retired.
 
