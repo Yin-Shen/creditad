@@ -67,11 +67,14 @@ re-run the upstream callers, not to reproduce the evidence tables.
 application source**. The released code here is the library, the `creditad` CLI, and an
 optional aiohttp API server (`pip install '.[server]'`): 0 of the 74 installed files is a
 frontend asset, and `creditad` is the only console script. The Electron desktop client
-that wraps this API is developed in a separate repository; from v1.0.1 its **pre-built
-binaries are attached to the GitHub release** (a Linux AppImage, a Windows installer and a
-Windows portable zip, each with a published SHA-256). Installing this package with `pip`
-still gets you no frontend. What follows describes the API server, and every statement
-below was measured against a live server started from a clean clone of this repository.
+that wraps this API is developed in a separate repository,
+https://github.com/Yin-Shen/creditad-desktop, the source of the desktop builds; from v1.0.1
+its **pre-built binaries are attached to the GitHub release** (a Linux AppImage, a Windows
+installer and a Windows portable zip, each with a published SHA-256; the v1.0.1 Linux
+AppImage needs the API server below started separately, see the README). Installing this
+package with `pip` still gets you no frontend. What follows describes the API server, and
+every statement below was measured against a live server started from a clean clone of
+this repository.
 
 **The Data Manager is an HTTP API, and it is reachable without any frontend.** With the
 server running (see "Running the API server" below):
@@ -179,11 +182,9 @@ Measured effect of those three links, with the variables already set: `/api/data
 goes from 0 to **6 of 9** entries present — the three still absent are the chr7 `.mcool`
 maps that are not in this repository.
 
-(Numbers above: `rebuild_2026-08-12/software/scripts/d13_verify_env_override_in_repo.py`
--> `results/d13_env_override_effect.json`.) This is a packaging wart, disclosed rather
-than papered over, and now half removed: the reproduction path
-(`scripts/reproduce_packages.py`, environment-variable driven) needs none of it, and the
-CLI needs none of it.
+This is a packaging wart, disclosed rather than papered over, and now half removed: the
+reproduction path (`scripts/reproduce_packages.py`, environment-variable driven) needs
+none of it, and the CLI needs none of it.
 
 ### Tier 3 — not in the repository tree
 

@@ -17,8 +17,7 @@ def _default_db_url() -> str:
 
         (sqlite3.OperationalError) unable to open database file
 
-    during init_db(), so the server never came up (measured 2026-08-13,
-    rebuild_2026-08-12/software/scripts/d03_bug4_runtime_effect.py).
+    during init_db(), so the server never came up (measured 2026-08-13).
 
     Resolution order:
       1. $TAD_DB_PATH               - unchanged, still wins.
