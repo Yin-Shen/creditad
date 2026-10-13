@@ -932,8 +932,11 @@ async def handle_tadvci_use_multicell_example(request: web.Request) -> web.Respo
 
     bed_tokens = []
     for name in _MULTICELL_BEDS:
-        bp = d / name
-        if bp.is_file() and bp.stat().st_size > 0:
+        # The repository ships these gzipped; v1.0.4 looked only for the plain name and
+        # so loaded the released demos with no caller tracks. Plain still wins if present.
+        bp = next((p for p in (d / name, d / f"{name}.gz")
+                   if p.is_file() and p.stat().st_size > 0), None)
+        if bp is not None:
             label = name.replace("_boundaries.bed", "")
             bed_tokens.append({"token": mgr.register(str(bp), "bed"), "fileName": label})
 
