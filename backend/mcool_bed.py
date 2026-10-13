@@ -1616,9 +1616,11 @@ def cluster_consensus(per_method: dict, tol: int, user_pos=None, count_user_as_v
 def _parse_loop_anchors(loops_path: str) -> dict:
     """Parse a HiCCUPS-style loops file -> {chrom: sorted np.array of anchor midpoints}.
 
-    Handles BOTH formats:
+    Handles these layouts:
       * header form (HiCCUPS .txt): named columns chr1,x1,x2,chr2,y1,y2 (+ extras);
-      * headerless 6-column .bedpe: chr1 x1 x2 chr2 y1 y2.
+      * BEDPE: the first 6 columns are chr1 x1 x2 chr2 y1 y2 (+ extras), with or without
+        '#' header/comment lines -- this includes the ENCODE / Juicer layout, whose first
+        line is "#chr1\tx1\t..." followed by "# juicer_tools version ...".
     Both loop ends are anchors. Chrom keys are normalised to bare numbers ('7', 'X').
     Plain or gzip-compressed (.gz). Returns {} for a file it cannot parse; callers that were
     given a loop file treat {} as an error (see require_loop_anchors)."""
@@ -1633,7 +1635,12 @@ def _parse_loop_anchors(loops_path: str) -> dict:
             first = _fh.readline().rstrip("\n").split("\t")
     except Exception:
         return {}
-    has_header = any(t.strip().lower() in ("chr1", "x1", "chrom1", "#chr1") for t in first)
+    # A first line starting with '#' is a comment even when it names the columns: v1.0.4
+    # read "#chr1" as a named header, found no column called "chr1" and rejected every
+    # ENCODE / Juicer loop file. Comment lines go to the BEDPE branch, which skips them.
+    first_is_comment = bool(first) and first[0].lstrip().startswith("#")
+    has_header = not first_is_comment and any(
+        t.strip().lower() in ("chr1", "x1", "chrom1") for t in first)
     try:
         if has_header:
             ldf = pd.read_csv(loops_path, sep="\t")
@@ -1644,7 +1651,7 @@ def _parse_loop_anchors(loops_path: str) -> dict:
             recs = ldf[[cols["chr1"], cols["x1"], cols["x2"],
                         cols["chr2"], cols["y1"], cols["y2"]]].itertuples(index=False, name=None)
         else:
-            # headerless .bedpe: first 6 columns are chr1 x1 x2 chr2 y1 y2
+            # BEDPE: first 6 columns are chr1 x1 x2 chr2 y1 y2; '#' lines are skipped
             ldf = pd.read_csv(loops_path, sep="\t", header=None, comment="#")
             if ldf.shape[1] < 6:
                 return {}
@@ -1668,8 +1675,9 @@ def require_loop_anchors(loops_path: str) -> dict:
     if not anchors:
         raise ValueError(
             f"loop file {loops_path!r} yielded no loop anchors; expected a HiCCUPS looplist "
-            "or a 6-column BEDPE (chr1 x1 x2 chr2 y1 y2), plain or gzip-compressed. Omit "
-            "--loops to record BD4 as not_assessable instead.")
+            "or a BEDPE whose first 6 columns are chr1 x1 x2 chr2 y1 y2 ('#' header and "
+            "comment lines are skipped), plain or gzip-compressed. Omit --loops to record "
+            "BD4 as not_assessable instead.")
     return anchors
 
 
