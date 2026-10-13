@@ -1,7 +1,7 @@
 # CrediTAD v1.0.5
 
-Bug fixes for loop-file input, the demo packages and read-only installs, a widened pandas
-range, and corrected desktop documentation. The tier rule, the grading and the released
+Bug fixes for loop-file and ChIP-track input, the demo packages and read-only installs, a
+widened pandas range, and corrected desktop documentation. The tier rule, the grading and the released
 evidence tables are unchanged: `scripts/reproduce_packages.py` regenerates all six packages
 exactly with this release (284,744 rows, 38 of 38 columns identical).
 
@@ -14,6 +14,15 @@ exactly with this release (284,744 rows, 38 of 38 columns identical).
   read. On ENCFF794OIH.bedpe.gz this gives the same 99,462 anchors on 23 chromosomes as a
   six-column copy of the file. A loop file that parses to no loops still stops the run with
   the same error.
+- **ChIP tracks that list a chromosome without data.** bedGraphToBigWig writes every
+  chromosome of the sizes file into the bigWig header, so a track made for some
+  chromosomes lists all of them. Releases up to v1.0.4 read every window on a listed
+  chromosome without data as zero signal and graded BD2/BD3 `none` at every boundary there.
+  Such a chromosome is now treated like one missing from the header: BD2/BD3 are
+  `not_assessable` and named in `not_assessable_criteria`. A window without data on a
+  chromosome that has data is still read as zero signal, because tracks written with
+  zero-valued intervals omitted carry no record there. The six released packages are
+  unaffected (their tracks have data on every chromosome they list).
 - **Demo caller tracks.** `POST /api/tadvci/use_multicell_example` registered only
   uncompressed `<caller>_boundaries.bed`, but this repository ships them as `.bed.gz`, so a
   demo served from the repository tree showed no caller tracks. The gzipped files are now
@@ -54,10 +63,12 @@ exactly with this release (284,744 rows, 38 of 38 columns identical).
   https://github.com/Yin-Shen/creditad-desktop.
 - `CrediTAD-Windows-Setup.exe` and `CrediTAD-Windows-1.0.1.zip`: the Windows builds of
   v1.0.1, carried forward unchanged (client 1.0.1, backend v1.0.1). They read a
-  gzip-compressed loop file as empty; decompress loop files before loading them there.
+  gzip-compressed loop file as empty, so decompress loop files before loading them there,
+  and they grade BD2/BD3 `none` on a chromosome that a ChIP track lists without data.
 - `RELEASE_ASSETS.sha256` lists the three files.
 
 ## Added
-- Tests: `backend/tests/tad_vci/test_loops_encode_juicer_layout.py`,
+- Tests: `backend/tests/tad_vci/test_bigwig_chromosome_without_data.py`,
+  `backend/tests/tad_vci/test_loops_encode_juicer_layout.py`,
   `backend/tests/tad_vci/test_multicell_demo_gz_beds.py`,
   `backend/tests/tad_vci/test_output_dir_read_only_install.py`.

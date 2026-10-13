@@ -1696,6 +1696,19 @@ def _bw_window_signal(bw_path: str, df, resolution: int, flank: int = 25000):
     """
     import numpy as np, pyBigWig
     bw = pyBigWig.open(bw_path)
+    has_data: dict = {}
+
+    def chrom_has_data(c, length):
+        # bedGraphToBigWig writes every chromosome of the sizes file into the header, so a
+        # track made for some chromosomes lists all of them. A listed chromosome without a
+        # single interval was not measured and must read like one missing from the header.
+        if c not in has_data:
+            try:
+                has_data[c] = bw.stats(c, 0, length, type="max")[0] is not None
+            except RuntimeError:
+                has_data[c] = False
+        return has_data[c]
+
     def win(chrom, pos):
         # Accept either naming convention. ENCODE bigWigs ship both "chr7" and bare "7"
         # keys depending on the processing pipeline; hard-coding the "chr" prefix made
@@ -1710,13 +1723,15 @@ def _bw_window_signal(bw_path: str, df, resolution: int, flank: int = 25000):
         if c is None:
             return np.nan
         L = avail[c]
-        if not L:
+        if not L or not chrom_has_data(c, L):
             return np.nan
         a, b = max(0, pos - flank), min(L, pos + flank)
         try:
             v = bw.stats(c, a, b, type="mean")[0]
         except (RuntimeError, KeyError):
             return np.nan
+        # An empty window on a chromosome that has data is zero signal: tracks written with
+        # zero-valued intervals omitted carry no record there.
         return float(v) if v is not None else 0.0
     sig = np.array([win(c, p) for c, p in zip(df["chrom"], df["pos"])], float)
     # background = genome-wide covered mean (header) as a stable per-cell reference.

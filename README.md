@@ -75,7 +75,8 @@ creditad annotate \
 ```
 
 Omit `--ctcf`, `--rad21` or `--loops` and that axis is recorded as `not_assessable`
-rather than as absent signal. With no `--panel`, BD1 is floored to `weak`: a single
+rather than as absent signal. The same holds on a chromosome that a ChIP track does not
+list, or lists without any data (release v1.0.4 and earlier graded the latter `none`). With no `--panel`, BD1 is floored to `weak`: a single
 method cannot express cross-caller agreement. BED and loop files may be plain or
 gzip-compressed; a loop file that yields no loop anchors stops the run with an error
 (release v1.0.3 and earlier read a gzipped loop file as empty without reporting it). A
@@ -227,4 +228,5 @@ unchanged; the portable archive keeps its build-time filename. They ship
 on Windows by the authors; no Windows version matrix was exercised. They embed the backend
 of release v1.0.1, which reads a gzip-compressed loop file as empty without reporting it
 (every boundary is then graded BD4 `none`): decompress loop files before loading them in
-the Windows builds.
+the Windows builds. That backend also grades BD2/BD3 `none` on a chromosome that a ChIP
+track lists without data; supply tracks that cover every chromosome they list.
