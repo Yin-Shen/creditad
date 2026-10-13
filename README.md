@@ -201,7 +201,7 @@ Windows NSIS installer and a Windows portable zip. Their SHA-256 digests are lis
 
 | file | client | embedded backend | size | SHA-256 |
 |---|---|---|---|---|
-| `CrediTAD-Linux.AppImage` | 1.0.2 | v1.0.5 | 540,753,929 B | `81061aef1133d27e758dd86cf23b0fe3b89dfc2cbe6a8bac0312542896bea51e` |
+| `CrediTAD-Linux.AppImage` | 1.0.2 | v1.0.5 | 540,753,908 B | `63d2cfbd637ab1e1083b7a2d313aac23697fe451ed3f347836e69a715c938ba3` |
 | `CrediTAD-Windows-Setup.exe` | 1.0.1 | v1.0.1 | 452,125,658 B | `a7b162421fc6171f27a52dad658e437215e98df3d037daa2d8ac8e1726688d81` |
 | `CrediTAD-Windows-1.0.1.zip` | 1.0.1 | v1.0.1 | 512,613,927 B | `9f5f2c2649a515d9a116ef251fd990e7a9c65c48c9766c7007cd71c247c3c57c` |
 

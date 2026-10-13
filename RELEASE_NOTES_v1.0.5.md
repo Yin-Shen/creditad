@@ -55,7 +55,7 @@ exactly with this release (284,744 rows, 38 of 38 columns identical).
 
 ## Desktop builds attached to this release
 - `CrediTAD-Linux.AppImage`: desktop client 1.0.2 with the backend of this release
-  (540,753,929 B, SHA-256 `81061aef1133d27e758dd86cf23b0fe3b89dfc2cbe6a8bac0312542896bea51e`).
+  (540,753,908 B, SHA-256 `63d2cfbd637ab1e1083b7a2d313aac23697fe451ed3f347836e69a715c938ba3`).
   It starts the backend it bundles: the client finds the interpreter at
   `runtime/bin/python`, and the runtime now includes `cooler` and `pyBigWig`. Mounted
   read-only, its Import page writes results under the per-user data directory (see
