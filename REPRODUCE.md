@@ -46,8 +46,8 @@ why this document keeps repeating the distinction.
 
 The matching chr7 `.mcool` contact maps (42.1, 48.3 and 90.8 MB) are **not** in the
 repository — they exceed the repository's file-size policy — and ship inside the desktop
-builds attached to the [v1.0.2
-release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2), under
+builds attached to the [v1.0.5
+release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.5), under
 `resources/example_data/chr7_tracks/`.
 
 ### Tier 2 — retrieved from ENCODE / 4DN by accession
@@ -70,8 +70,8 @@ frontend asset, and `creditad` is the only console script. The Electron desktop 
 that wraps this API is developed in a separate repository,
 https://github.com/Yin-Shen/creditad-desktop, the source of the desktop builds; from v1.0.1
 its **pre-built binaries are attached to the GitHub release** (a Linux AppImage, a Windows
-installer and a Windows portable zip, each with a published SHA-256; the v1.0.1 Linux
-AppImage needs the API server below started separately, see the README). Installing this
+installer and a Windows portable zip, each with a published SHA-256; see the README for
+which build embeds which backend). Installing this
 package with `pip` still gets you no frontend. What follows describes the API server, and
 every statement below was measured against a live server started from a clean clone of
 this repository.
@@ -110,7 +110,7 @@ Two levels of automation, and the difference matters:
   naming the directory to place it in. Six of the nine (the chr7 CTCF and RAD21 bigWigs)
   ship in this repository under `data/chr7_preview_tracks/`; the three chr7 `.mcool` contact
   maps do not (42.1, 48.3 and 90.8 MB) and ship inside the desktop builds attached to the
-  v1.0.2 release, under `resources/example_data/chr7_tracks/`.
+  v1.0.5 release, under `resources/example_data/chr7_tracks/`.
 - **Optional full-genome ENCODE/4DN tracks (the table above)** — **listed, never fetched.**
   `GET /api/data/catalog` returns each accession with its size, the exact folder to place it
   in, and the source URL (`https://www.encodeproject.org/files/<ACC>/@@download/<ACC>.bigWig`
@@ -194,7 +194,7 @@ are not in the tree:
 
 - **The three chr7 `.mcool` contact maps** (42.1, 48.3 and 90.8 MB) exceed the
   repository's file-size policy. They ship inside the desktop builds attached to the
-  [v1.0.2 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2), under
+  [v1.0.5 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.5), under
   `resources/example_data/chr7_tracks/`.
 - **The raw per-caller call sets** the packages were built from are not redistributed.
   Each package manifest records the call set it was built from by path and SHA-256

@@ -129,10 +129,9 @@ where it matters). The genome-wide ENCODE ChIP tracks and 4DN Hi-C matrices are 
 accession. **This repository ships no graphical application source.** The code here is the
 library, the `creditad` CLI and an optional aiohttp API server, and a `pip` install gets
 no frontend. The Electron desktop client is developed in a separate repository,
-https://github.com/Yin-Shen/creditad-desktop, the source of the desktop builds; from
-v1.0.1 its pre-built binaries for Linux and Windows are attached to the GitHub release,
-each with a published SHA-256 (see [Desktop application](#desktop-application) for what the
-v1.0.1 Linux build needs). The server's Data Manager
+https://github.com/Yin-Shen/creditad-desktop, the source of the desktop builds; its
+pre-built binaries for Linux and Windows are attached to the GitHub release, each with a
+published SHA-256 (see [Desktop application](#desktop-application)). The server's Data Manager
 endpoints (`/api/data/status`, `/api/data/catalog`, `/api/data/verify`) report which inputs
 are present, re-hash the shipped chr7 assets against stored MD5s, and give the accession,
 size and destination folder for each track you still need -- they never fetch the
@@ -143,7 +142,7 @@ tracks from ENCODE yourself.
 There is no separate archive deposit and no DOI. Two classes of file are deliberately not
 in this tree: the three chr7 `.mcool` contact maps (42.1, 48.3 and 90.8 MB), which exceed
 the repository's file-size policy and ship instead inside the desktop builds attached to
-the [v1.0.2 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2) under
+the [v1.0.5 release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.5) under
 `resources/example_data/chr7_tracks/`; and the raw per-caller call sets, which are not
 redistributed — each package manifest records the call set it was built from by path and
 SHA-256, and the per-caller boundary BEDs derived from it ship here under
@@ -172,10 +171,9 @@ the evidence tables, with gap and blacklist positions recorded as `not_assessabl
 `data/multicell_v1.1/` with `scripts/mask_and_retier.py` and its impact tables. Install
 with `pip install .` for the library and command-line interface, or `pip install
 '.[server]'` to add the local HTTP/JSON API service. Desktop application builds — an
-AppImage for Linux, and an installer and a portable archive for Windows — are attached to the
-v1.0.2 release, unchanged since v1.0.1; their SHA-256 digests are listed in
-`RELEASE_ASSETS.sha256`. The Linux AppImage needs the local HTTP/JSON API service started
-separately (see [Desktop application](#desktop-application)). Python >= 3.10.
+AppImage for Linux (client 1.0.2), and an installer and a portable archive for Windows
+(client 1.0.1) — are attached to the v1.0.5 release; their SHA-256 digests are listed in
+`RELEASE_ASSETS.sha256` (see [Desktop application](#desktop-application)). Python >= 3.10.
 
 The ChIP-seq tracks the evidence tables were built from are ENCODE files (GRCh38, fold
 change over control), retrieved by accession from
@@ -195,38 +193,38 @@ MIT — see [LICENSE](LICENSE).
 
 ## Desktop application
 
-Pre-built desktop binaries are attached to the [v1.0.2
-release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.2): a Linux AppImage, a
-Windows NSIS installer and a Windows portable zip. They are the same binaries that were
-attached to v1.0.1, carried forward unchanged, and they are not re-uploaded for later tags;
-the portable archive keeps its build-time filename `CrediTAD-Windows-1.0.1.zip`. Their SHA-256
-digests are listed in `RELEASE_ASSETS.sha256`:
+Pre-built desktop binaries are attached to the [v1.0.5
+release](https://github.com/Yin-Shen/creditad/releases/tag/v1.0.5): a Linux AppImage, a
+Windows NSIS installer and a Windows portable zip. Their SHA-256 digests are listed in
+`RELEASE_ASSETS.sha256`:
 
-| file | size | SHA-256 |
-|---|---|---|
-| `CrediTAD-Linux.AppImage` | 536,584,356 B | `a991dc39b7477b10d28a954e513cd6b7c54e6bdea5ae8c81d000bda604120f4e` |
-| `CrediTAD-Windows-Setup.exe` | 452,125,658 B | `a7b162421fc6171f27a52dad658e437215e98df3d037daa2d8ac8e1726688d81` |
-| `CrediTAD-Windows-1.0.1.zip` | 512,613,927 B | `9f5f2c2649a515d9a116ef251fd990e7a9c65c48c9766c7007cd71c247c3c57c` |
+| file | client | embedded backend | size | SHA-256 |
+|---|---|---|---|---|
+| `CrediTAD-Linux.AppImage` | 1.0.2 | v1.0.5 | 540,753,929 B | `81061aef1133d27e758dd86cf23b0fe3b89dfc2cbe6a8bac0312542896bea51e` |
+| `CrediTAD-Windows-Setup.exe` | 1.0.1 | v1.0.1 | 452,125,658 B | `a7b162421fc6171f27a52dad658e437215e98df3d037daa2d8ac8e1726688d81` |
+| `CrediTAD-Windows-1.0.1.zip` | 1.0.1 | v1.0.1 | 512,613,927 B | `9f5f2c2649a515d9a116ef251fd990e7a9c65c48c9766c7007cd71c247c3c57c` |
 
-The AppImage and the Windows portable archive embed the backend of release v1.0.1 (every
-shipped `.py` file has the SHA-256 it has at tag v1.0.1; the backend in this repository has
-changed since, see the release notes), and the installer packages the same Windows build.
-Each build carries its own Python runtime. Verify a download against the SHA-256 in
-`RELEASE_ASSETS.sha256` before running it.
+The client source of each build is the tag of the same version in the desktop client's
+repository, https://github.com/Yin-Shen/creditad-desktop. Each build carries its own Python
+runtime, and no separate Python installation is needed. Verify a download against the
+SHA-256 in `RELEASE_ASSETS.sha256` before running it.
 
-**Linux AppImage (v1.0.1 build): start the local HTTP/JSON API service yourself.** The
-AppImage does not start the backend it bundles: its launcher looks for the interpreter at
-`runtime/python`, while the bundled Linux runtime has it at `runtime/bin/python`, and that
-runtime lacks `cooler` and `pyBigWig`. Its interface still runs, and it talks to whatever
-CrediTAD service listens on `127.0.0.1:5001`. Install this repository with
-`pip install '.[server]'`, start the service on port 5001 as described under "Running the
-API server" in [REPRODUCE.md](REPRODUCE.md), then open the AppImage. With this build a
-separate Python installation is therefore needed.
+**Linux AppImage (client 1.0.2).** It starts the backend of release v1.0.5 that it bundles;
+its runtime includes `cooler` and `pyBigWig`. Mounted read-only, as the AppImage runtime
+mounts it, the bundled service answered its health check, all six demo packages loaded with
+their caller, ChIP and contact-map tracks, and the client's three end-to-end scripts
+(CLI/API agreement, demo packages, Import page) passed. The AppImage needs FUSE 2
+(`libfuse.so.2`); where unprivileged user namespaces are restricted it must be started with
+`--no-sandbox`. The v1.0.1 Linux AppImage, still attached to the v1.0.1 and v1.0.2 releases
+(SHA-256 `a991dc39b7477b10d28a954e513cd6b7c54e6bdea5ae8c81d000bda604120f4e`), does not
+start the backend it bundles (its launcher looks for `runtime/python`, while the runtime
+has `runtime/bin/python` and lacks `cooler` and `pyBigWig`); use the 1.0.2 build instead.
 
-**Windows builds: not affected.** The Windows build ships `runtime/python.exe`, the
-interpreter its launcher looks for, together with `cooler` and `winbbi` (the Windows bigWig
-reader). It was cross-built on Linux and confirmed working on Windows by the authors; no
-Windows version matrix was exercised.
-
-The desktop builds are made from the desktop client's source repository,
-https://github.com/Yin-Shen/creditad-desktop.
+**Windows builds (client 1.0.1).** They are the files attached to v1.0.1, carried forward
+unchanged; the portable archive keeps its build-time filename. They ship
+`runtime/python.exe`, the interpreter their launcher looks for, together with `cooler` and
+`winbbi` (the Windows bigWig reader), and were cross-built on Linux and confirmed working
+on Windows by the authors; no Windows version matrix was exercised. They embed the backend
+of release v1.0.1, which reads a gzip-compressed loop file as empty without reporting it
+(every boundary is then graded BD4 `none`): decompress loop files before loading them in
+the Windows builds.

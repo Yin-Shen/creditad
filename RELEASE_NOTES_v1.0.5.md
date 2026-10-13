@@ -35,15 +35,27 @@ exactly with this release (284,744 rows, 38 of 38 columns identical).
   `scripts/reproduce_packages.py` regenerates the six packages exactly; the six regenerated
   tables are byte-identical to those produced under Python 3.13.12 with pandas 2.3.1.
   `requirements.lock.txt` still records the Python 3.13 test environment (pandas 2.3.1).
-- **Desktop documentation.** The README no longer states that the Linux AppImage runs on
-  its own without a separate Python. The v1.0.1 Linux AppImage does
-  not start the backend it bundles (its launcher looks for `runtime/python`; the bundled
-  runtime has `runtime/bin/python` and lacks `cooler` and `pyBigWig`), so it needs the
-  local HTTP/JSON API service started separately; the Windows builds are not affected. The
-  desktop builds embed the backend of v1.0.1. The README and REPRODUCE.md now point to the
-  desktop source repository, https://github.com/Yin-Shen/creditad-desktop.
+- **Desktop documentation.** The README states which backend each desktop build embeds and
+  records that the v1.0.1 Linux AppImage does not start the backend it bundles (its
+  launcher looks for `runtime/python`; the bundled runtime has `runtime/bin/python` and
+  lacks `cooler` and `pyBigWig`); the 1.0.2 AppImage attached here fixes this. The README
+  and REPRODUCE.md now point to the desktop source repository,
+  https://github.com/Yin-Shen/creditad-desktop.
 - A development-tree path was removed from REPRODUCE.md and from a comment in
   `backend/sql.py`.
+
+## Desktop builds attached to this release
+- `CrediTAD-Linux.AppImage`: desktop client 1.0.2 with the backend of this release
+  (540,753,929 B, SHA-256 `81061aef1133d27e758dd86cf23b0fe3b89dfc2cbe6a8bac0312542896bea51e`).
+  It starts the backend it bundles: the client finds the interpreter at
+  `runtime/bin/python`, and the runtime now includes `cooler` and `pyBigWig`. Mounted
+  read-only, its Import page writes results under the per-user data directory (see
+  "Read-only installs" above). Client source: tag v1.0.2 of
+  https://github.com/Yin-Shen/creditad-desktop.
+- `CrediTAD-Windows-Setup.exe` and `CrediTAD-Windows-1.0.1.zip`: the Windows builds of
+  v1.0.1, carried forward unchanged (client 1.0.1, backend v1.0.1). They read a
+  gzip-compressed loop file as empty; decompress loop files before loading them there.
+- `RELEASE_ASSETS.sha256` lists the three files.
 
 ## Added
 - Tests: `backend/tests/tad_vci/test_loops_encode_juicer_layout.py`,
