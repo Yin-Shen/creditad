@@ -130,16 +130,14 @@ themselves** — which is the supported path for reproducing the tables, and the
 
 ### Running the API server
 
-The server is usable headless. It needs a writable SQLite path, because the built-in
-default is a *relative* path (`extra_mode/tad_tokens.db`) that does not exist in this
-repository — without `TAD_DB_PATH` it exits during startup with
-`sqlite3.OperationalError: unable to open database file`:
+The server is usable headless. Its token database goes to `$TAD_DB_PATH` when that is
+set, and otherwise to the per-user data directory (`$XDG_DATA_HOME/CrediTAD` or
+`~/.local/share/CrediTAD`; `%LOCALAPPDATA%\CrediTAD` on Windows):
 
 ```bash
 pip install '.[server]'
-mkdir -p ~/.creditad
 cd backend
-TAD_DB_PATH="sqlite:///$HOME/.creditad/tad_tokens.db" CREDITAD_PORT=5001 python main.py
+CREDITAD_PORT=5001 python main.py
 # -> [STARTUP|ready|done|All systems operational on port 5001
 #    CrediTAD API ready [Port: 5001]
 ```
@@ -226,13 +224,14 @@ Runtime: about 100 s for all six on one core (see the benchmark in the paper).
 
 ```bash
 pip install '.[test]'
-pytest                     # 239 passed, 39 skipped, 7 deselected
+pytest                     # 260 passed, 39 skipped, 7 deselected
 ```
 
 The 7 deselected tests are quarantined legacy experiments (`legacy_bcp`,
 `legacy_reference` markers in `pyproject.toml`); they are not part of the production
 contract. The 39 skips are tests whose data is not present in a clean checkout (archived
-hg19 fixtures, host ChIP tracks); they report the missing file and skip rather than fail.
+hg19 fixtures, host ChIP tracks, files in the layout of the desktop package); they report
+the missing file and skip rather than fail.
 
 ## Environment variables
 
