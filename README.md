@@ -84,6 +84,19 @@ BEDPE loop file is read from its first six columns (chr1 x1 x2 chr2 y1 y2), and 
 starting with `#` are skipped, so ENCODE / Juicer loop files whose header line starts with
 `#chr1` are read as distributed (release v1.0.4 and earlier rejected them).
 
+Inside assembly gaps, centromeric and heterochromatic bands and ENCODE exclusion-list
+regions a ChIP track holds no interpretable signal. `--mask hg38` withholds BD2 and BD3
+there, using the hg38 mask that ships with the package (`data/masks/`: UCSC gap table,
+UCSC cytoBand acen/gvar/stalk bands, ENCODE ENCFF356LFX); any BED file can be given
+instead. A boundary whose position lies inside the mask gets BD2/BD3 `not_assessable`, the
+record a run without ChIP input gives, and its tier is re-derived by the same rule; BD1,
+BD4 and the raw signal columns are kept, and the masked rows are listed in
+`tadvci_mask_records_<tag>.tsv`. The HTTP API takes the same option as `mask_bed` in
+`POST /api/tadvci/annotate`. Without `--mask` the output is unchanged. With `--mask hg38`,
+annotating the six packages from their inputs gives the v1.1 tables of
+`data/multicell_v1.1/` byte for byte on every row they keep (see
+[REPRODUCE.md](REPRODUCE.md)).
+
 Quick start, from files that ship in this repository, checked byte for byte against
 the expected output:
 
@@ -111,6 +124,8 @@ creditad criteria
 ```
 data/multicell/             six evidence tables + candidate/caller BEDs (gzipped), v1.0
 data/multicell_v1.1/        the same tables with gap/blacklist positions not_assessable
+data/masks/                 hg38 mask for --mask (gap, cytoband heterochromatin, ENCODE
+                            exclusion list), its sources and checksums
 data/loops/                 HiCCUPS loop calls (BD4 input)
 data/chr7_preview_tracks/   chr7 display tracks -- NOT analysis inputs
 backend/tad_vci/            evidence engine, tier rule, CLI
@@ -119,7 +134,8 @@ backend/mcool_bed.py        bigWig / loop-call readers used by the annotation pa
 backend/validate_bigwig.py  genome-build guard for supplied tracks
 backend/tests/              pytest suite
 scripts/                    reproduce_packages.py (regenerate the six tables and compare
-                            every column) and mask_and_retier.py (derive the v1.1 tables)
+                            every column), mask_and_retier.py (derive the v1.1 tables and
+                            check them) and build_hg38_mask.py (rebuild data/masks/)
 ```
 
 ## Data
@@ -169,7 +185,8 @@ data that ships with it; there is no separate archive deposit and no DOI. It con
 package, the test suite, the six evidence tables, the candidate and per-caller BEDs, the
 package manifests, the HiCCUPS loop calls and `scripts/reproduce_packages.py`; release v1.1 of
 the evidence tables, with gap and blacklist positions recorded as `not_assessable`, ships under
-`data/multicell_v1.1/` with `scripts/mask_and_retier.py` and its impact tables. Install
+`data/multicell_v1.1/` with `scripts/mask_and_retier.py` and its impact tables, and
+`creditad annotate --mask hg38` applies the same masking to new annotation runs. Install
 with `pip install .` for the library and command-line interface, or `pip install
 '.[server]'` to add the local HTTP/JSON API service. Desktop application builds — an
 AppImage for Linux (client 1.0.2), and an installer and a portable archive for Windows

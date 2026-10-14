@@ -31,6 +31,8 @@ boundaries itself.
 | candidate BED + six per-caller BEDs + tier BED | `data/multicell/<CELL>_<RES>/*_boundaries.bed.gz` | gzip (5.4 MB) |
 | package manifests (accessions, counts, provenance) | `data/multicell/<CELL>_<RES>/manifest.json` | plain |
 | HiCCUPS loop calls (the BD4 input), 3 cell lines | `data/loops/<CELL>_HiCCUPS_loops_hg38.bedpe.gz` | gzip (1.6 MB) |
+| v1.1 evidence tables (gap and blacklist masking) + impact tables | `data/multicell_v1.1/` | gzip |
+| hg38 mask for `--mask` and hg38 chromosome sizes | `data/masks/` (sources and checksums in its README) | gzip / plain |
 | chr7 **preview** ChIP tracks | `data/chr7_preview_tracks/*.bigWig` | 31.6 MB |
 
 `pandas.read_csv` reads the `.gz` files directly; nothing needs unpacking first.
@@ -220,11 +222,34 @@ Exit code 0 iff every column of every checked package matches. If an input is mi
 script says which one and skips that package rather than silently comparing less.
 Runtime: about 100 s for all six on one core (see the benchmark in the paper).
 
+### The v1.1 tables (gap and blacklist masking)
+
+```bash
+python scripts/mask_and_retier.py --out v11_out --check data/multicell_v1.1
+```
+
+derives the six v1.1 tables from the v1.0 tables with the bundled hg38 mask
+(`data/masks/hg38_mask.bed.gz`, the code path of `creditad annotate --mask hg38`), removes
+the 12 candidates lying at or beyond the end of their chromosome (`data/masks/hg38.chrom.sizes`),
+and compares every file it writes with `data/multicell_v1.1/`. It needs no ChIP track.
+Verified 2026-10-13: annotation tables, union and tier BEDs, masking records and the three
+summary tables in `impact/` byte-identical for all six packages (284,732 rows, 4,474
+masked). In the manifests, the fields naming file locations and the generating script
+differ, and so do two fields copied from the v1.0 manifests (`hic_matrix`, absent from the
+v1.0 manifests in `data/multicell/`, and the loop-file path inside `loop_calls`).
+
+The same tables come out of a fresh annotation: running the six packages through
+`annotate_from_beds` with the inputs of `scripts/reproduce_packages.py` and
+`mask_bed="hg38"` (`creditad annotate ... --mask hg38`) gives, on the 284,732 rows v1.1
+keeps, annotation tables byte-identical to `data/multicell_v1.1/` (38 of 38 columns;
+verified 2026-10-13). `--mask` does not remove rows; the 12 off-chromosome-end candidates
+are not inside the mask and keep their v1.0 grades.
+
 ## Test suite
 
 ```bash
 pip install '.[test]'
-pytest                     # 260 passed, 39 skipped, 7 deselected
+pytest                     # 278 passed, 39 skipped, 7 deselected
 ```
 
 The 7 deselected tests are quarantined legacy experiments (`legacy_bcp`,

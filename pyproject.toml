@@ -117,7 +117,7 @@ exclude = [
 ]
 
 [tool.setuptools.package-data]
-tad_vci = ["calibrated_bands.json", "normalization_spec.json"]
+tad_vci = ["calibrated_bands.json", "normalization_spec.json", "masks/*.bed.gz"]
 
 [tool.ruff]
 line-length = 100

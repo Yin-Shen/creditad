@@ -75,6 +75,7 @@ def test_built_wheel_contains_only_active_runtime_packages(tmp_path: Path) -> No
     assert "tad_vci/__init__.py" in names
     assert "tad_vci/calibrated_bands.json" in names
     assert "tad_vci/normalization_spec.json" in names
+    assert "tad_vci/masks/hg38_mask.bed.gz" in names   # `creditad annotate --mask hg38`
     assert "builtin_callers_v2/__init__.py" in names
     for name in names:
         normalized = f"/{name}"

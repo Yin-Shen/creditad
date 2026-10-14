@@ -1052,6 +1052,8 @@ async def handle_tadvci_annotate(request: web.Request) -> web.Response:
       ctcf_bw / rad21_bw / loops_path (optional): BD2–BD4 only when supplied —
         never auto-filled from demo data
       cell_line, assembly, resolution, hash_tag, output_dir
+      mask_bed (optional): BED of regions where BD2/BD3 are recorded not_assessable,
+        or "hg38" for the bundled hg38 mask (same as the CLI's --mask)
       hic_token (optional): if provided, bind the annotation to that existing
         Hi-C session token so the heatmap + tier share one key
     """
@@ -1112,6 +1114,20 @@ async def handle_tadvci_annotate(request: web.Request) -> web.Response:
     cell_line = body.get("cell_line")
     assembly = body.get("assembly")
 
+    mask_spec = body.get("mask_bed")
+    if mask_spec is not None and not isinstance(mask_spec, str):
+        return web.json_response({"error": "mask_bed must be a string"}, status=400)
+    mask_spec = (mask_spec or "").strip() or None
+    mask_path = None
+    if mask_spec:
+        from tad_vci.masking import resolve_mask
+        try:
+            mask_path = resolve_mask(mask_spec, assembly)
+        except FileNotFoundError:
+            return web.json_response({"error": f"mask_bed not found: {mask_spec}"}, status=404)
+        except ValueError as exc:
+            return web.json_response({"error": str(exc)}, status=400)
+
     try:
         import asyncio
         from tad_vci.annotate_from_beds import annotate_from_beds
@@ -1128,6 +1144,7 @@ async def handle_tadvci_annotate(request: web.Request) -> web.Response:
                 assembly=assembly,
                 hash_tag=hash_tag,
                 output_dir=output_dir,
+                mask_bed=mask_path,
             ),
         )
     except FileNotFoundError as e:
@@ -1193,7 +1210,7 @@ async def handle_tadvci_annotate(request: web.Request) -> web.Response:
                 "path": path,
             })
 
-    return web.json_response({
+    payload = {
         "ok": True,
         "role": "downstream_evidence_annotation",
         "session_token": session_token,
@@ -1217,7 +1234,11 @@ async def handle_tadvci_annotate(request: web.Request) -> web.Response:
             "Boundaries graded as inputs. Built-in callers were not run. "
             "BD2–BD4 are assessable only for assays you supplied."
         ),
-    })
+    }
+    if mask_path:
+        payload["n_masked"] = result.get("n_masked")
+        payload["mask_records"] = result.get("mask_records")
+    return web.json_response(payload)
 
 
 async def handle_tadvci_imported(request: web.Request) -> web.Response:

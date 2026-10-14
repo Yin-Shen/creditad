@@ -16,6 +16,12 @@ Grade one caller's boundaries against a five-method panel, with CTCF/RAD21 and l
         --cell-line GM12878 --assembly hg19 --resolution 25000 \\
         --out results/
 
+Record BD2/BD3 as not_assessable at boundaries inside hg38 assembly gaps, centromeric and
+heterochromatic bands and the ENCODE exclusion list (the bundled hg38 mask; any BED works):
+
+    creditad annotate --boundaries candidates.bed --ctcf CTCF.bigWig --rad21 RAD21.bigWig \\
+        --cell-line GM12878 --assembly hg38 --mask hg38 --out results/
+
 Grade a single caller with no panel (BD1 is floored to `weak`, which the card states):
 
     creditad annotate --boundaries mycalls.bed --resolution 10000 --out results/
@@ -67,6 +73,7 @@ def _run_annotate(annotate_from_beds, primary: Path, panel, args: argparse.Names
         output_dir=str(Path(args.out).expanduser()),
         origin="user",
         uncalibrated_bands=args.uncalibrated_bands,
+        mask_bed=args.mask_path,
     )
 
 
@@ -79,6 +86,14 @@ def cmd_annotate(args: argparse.Namespace) -> int:
     for label, val in (("--ctcf", args.ctcf), ("--rad21", args.rad21), ("--loops", args.loops)):
         if val and not Path(val).expanduser().is_file():
             raise SystemExit(f"{label} file not found: {val}")
+
+    args.mask_path = None
+    if args.mask:
+        from tad_vci.masking import resolve_mask
+        try:
+            args.mask_path = resolve_mask(args.mask, args.assembly)
+        except (FileNotFoundError, ValueError) as exc:
+            raise SystemExit(f"--mask: {exc}")
 
     panel = _parse_panel(args.panel)
     try:
@@ -93,6 +108,10 @@ def cmd_annotate(args: argparse.Namespace) -> int:
         print(f"tier distribution : {result['tier_dist']}")
         print(f"evidence table    : {result['TADVCI_annotation']}")
         print(f"tier BED          : {result['TADVCI_tier']}")
+        if args.mask_path:
+            print(f"mask              : {result['mask']}")
+            print(f"masked boundaries : {result['n_masked']} (BD2/BD3 not_assessable; "
+                  f"records: {result['mask_records']})")
         if not args.ctcf:
             print("note: no --ctcf given, so BD2 is not_assessable (distinct from 'depleted')")
         if not args.rad21:
@@ -157,6 +176,14 @@ def build_parser() -> argparse.ArgumentParser:
                         "background. not_assessable: refuse to grade BD2/BD3. gm12878_fallback: "
                         "the legacy behaviour, which inflated grades one-directionally "
                         "(measured BD3 +31%% on HepG2) — opt in only if you know why.")
+    a.add_argument("--mask", default=None, metavar="BED|hg38",
+                   help="BED (plain or .gz) of regions where a ChIP grade is not a "
+                        "measurement. A boundary whose position lies inside one gets "
+                        "BD2/BD3 = not_assessable and its tier re-derived; BD1 and BD4 are "
+                        "kept. 'hg38' selects the bundled hg38 mask (UCSC gap table, "
+                        "centromeric/heterochromatic cytobands, ENCODE ENCFF356LFX), the "
+                        "mask of the v1.1 tables. Masked rows are listed in "
+                        "tadvci_mask_records_<tag>.tsv. Default: no mask")
     a.add_argument("--json", action="store_true", help="print the result summary as JSON")
     a.set_defaults(func=cmd_annotate)
 

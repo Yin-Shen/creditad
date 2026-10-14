@@ -114,6 +114,7 @@ def annotate_from_beds(
     output_dir: str = "./tad_results",
     origin: str = "user",
     uncalibrated_bands: str = "in_situ",
+    mask_bed: Optional[str] = None,
 ) -> dict:
     """Grade primary BED candidates with optional multi-method BD1 panel.
 
@@ -128,12 +129,22 @@ def annotate_from_beds(
         Optional list of ``(path, display_name)``. Each file is one BD1 voter.
         When empty, every primary position gets votes=1 and n_methods=1
         (single-caller; cross-caller support is not multi-method informative).
+    mask_bed
+        Optional BED of regions where a ChIP grade is not a measurement (assembly gaps,
+        exclusion lists), or the name of a bundled mask ("hg38"). A boundary whose position
+        lies inside it gets BD2/BD3 = not_assessable and a re-derived tier; see
+        tad_vci.masking. Masked rows are listed in tadvci_mask_records_<tag>.tsv. Without
+        a mask nothing changes.
     """
     os.makedirs(output_dir, exist_ok=True)
     t0 = time.time()
     primary = _read_boundary_starts(primary_bed)
     if primary.empty:
         raise ValueError(f"Primary BED has no parseable positions: {primary_bed}")
+    mask = None
+    if mask_bed:
+        from tad_vci.masking import load_mask, resolve_mask
+        mask = load_mask(resolve_mask(mask_bed, assembly))
 
     # BD1 vote-matching tolerance. A hardcoded 50 kb default made the API and the CLI
     # disagree on the same input: at 10 kb the CLI passed resolution*2 = 20 kb while the API
@@ -356,9 +367,23 @@ def annotate_from_beds(
     else:
         full = df
 
+    # Mask after grading: cutpoints, background and unmasked rows stay exactly as an
+    # unmasked run gives them (the rule the v1.1 tables were built with).
+    mask_records = None
+    if mask is not None and len(full) and "D_tier" in full.columns:
+        from tad_vci.masking import apply_mask
+        full, mask_records = apply_mask(full, mask)
+
     suffix = f"_{hash_tag}" if hash_tag else ""
     ann_tsv = os.path.join(output_dir, f"tadvci_annotation_beds{suffix}.tsv")
     full.to_csv(ann_tsv, sep="\t", index=False)
+    rec_tsv = None
+    if mask is not None:
+        from tad_vci.masking import RECORD_COLUMNS
+        rec_tsv = os.path.join(output_dir, f"tadvci_mask_records{suffix}.tsv")
+        if mask_records is None:
+            mask_records = pd.DataFrame(columns=RECORD_COLUMNS)
+        mask_records.to_csv(rec_tsv, sep="\t", index=False)
     tier_bed = os.path.join(output_dir, f"tadvci_tier_beds{suffix}.bed")
     with open(tier_bed, "w") as fh:
         if len(full):
@@ -376,7 +401,7 @@ def annotate_from_beds(
         f"panel={panel_names or ['(single)']} n_methods={n_methods} "
         f"dist={dist} {time.time() - t0:.1f}s -> {ann_tsv}"
     )
-    return {
+    result = {
         "TADVCI_annotation": ann_tsv,
         "TADVCI_tier": tier_bed,
         "n_boundaries": int(len(full)),
@@ -385,3 +410,10 @@ def annotate_from_beds(
         "tier_dist": dist,
         "primary_bed": primary_bed,
     }
+    if mask is not None:
+        result["mask"] = mask.path
+        result["n_masked"] = int(len(mask_records))
+        result["mask_records"] = rec_tsv
+        print(f"[annotate-from-beds] mask={mask.path} intervals={mask.n_intervals} "
+              f"masked={len(mask_records)} of {len(full)} -> {rec_tsv}")
+    return result

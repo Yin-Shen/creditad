@@ -1,9 +1,11 @@
 # CrediTAD v1.0.5
 
-Bug fixes for loop-file and ChIP-track input, the demo packages and read-only installs, a
-widened pandas range, and corrected desktop documentation. The tier rule, the grading and the released
-evidence tables are unchanged: `scripts/reproduce_packages.py` regenerates all six packages
-exactly with this release (284,744 rows, 38 of 38 columns identical).
+Bug fixes for loop-file and ChIP-track input, the demo packages and read-only installs, an
+optional mask that withholds the ChIP grades in gap and exclusion-list regions, a widened
+pandas range, and corrected desktop documentation. The tier rule, the grading and the
+released evidence tables are unchanged: `scripts/reproduce_packages.py` regenerates all six
+packages exactly with this release (284,744 rows, 38 of 38 columns identical), and without
+`--mask` every output is byte-identical to that of the previous code.
 
 ## Fixed
 - **ENCODE / Juicer loop files.** Loop files in the BEDPE layout that ENCODE distributes
@@ -52,6 +54,15 @@ exactly with this release (284,744 rows, 38 of 38 columns identical).
   https://github.com/Yin-Shen/creditad-desktop.
 - A development-tree path was removed from REPRODUCE.md and from a comment in
   `backend/sql.py`.
+- **v1.1 masking scripts.** `scripts/mask_and_retier.py` and `scripts/mask_common.py` no
+  longer contain machine-specific paths. They call the package's masking code (the code
+  behind `--mask`) and take `--packages-dir`, `--mask`, `--chrom-sizes` and `--out`;
+  `--check data/multicell_v1.1` compares every file written with the released v1.1 tables.
+  All annotation tables, BEDs, masking records and summary tables come out byte-identical;
+  in the manifests, the fields naming file locations and the generator differ, as do two
+  fields copied from the v1.0 manifests (`hic_matrix` and the loop-file path in
+  `loop_calls`). `data/multicell_v1.1/README.md` now states that the gap set includes the
+  centromeric and heterochromatic cytobands.
 
 ## Desktop builds attached to this release
 - `CrediTAD-Linux.AppImage`: desktop client 1.0.2 with the backend of this release
@@ -68,7 +79,27 @@ exactly with this release (284,744 rows, 38 of 38 columns identical).
 - `RELEASE_ASSETS.sha256` lists the three files.
 
 ## Added
-- Tests: `backend/tests/tad_vci/test_bigwig_chromosome_without_data.py`,
+- **`--mask` for the ChIP axes.** `creditad annotate --mask BED` (and `mask_bed` in the body
+  of `POST /api/tadvci/annotate`) records BD2 and BD3 as `not_assessable`, and names them in
+  `not_assessable_criteria`, for every boundary whose position lies inside an interval of
+  the BED (half-open, chromosome names compared without a leading `chr`); the tier of those
+  boundaries is re-derived with the released rule. BD1, BD4 and the raw `ctcf` / `rad21` /
+  fold / null-percentile columns are not changed, the 38-column table keeps its layout, and
+  the masked rows are listed in `tadvci_mask_records_<tag>.tsv`. A masked boundary carries
+  the same BD2, BD3, tier and `not_assessable_criteria` as a run without ChIP input.
+  `--mask hg38` selects the mask that ships with the package (`data/masks/hg38_mask.bed.gz`,
+  also installed as `tad_vci/masks/hg38_mask.bed.gz`): the UCSC hg38 gap table, the UCSC
+  cytoBand acen, gvar and stalk bands and the ENCODE exclusion list ENCFF356LFX, chr1–22, X
+  and Y, 1,583 intervals; sources, retrieval dates, checksums and licence terms are in
+  `data/masks/README.md`, and `scripts/build_hg38_mask.py` rebuilds it byte for byte. It is
+  the mask of the v1.1 tables: annotating the six packages with `--mask hg38` gives the
+  annotation tables of `data/multicell_v1.1/` byte for byte on the 284,732 rows v1.1 keeps
+  (4,474 masked rows); v1.1 also removes 12 candidates lying beyond their chromosome end,
+  which `--mask` does not do. The bundled mask is refused for a run declared as another
+  assembly.
+- `data/masks/hg38.chrom.sizes` (chr1–22, X, Y, M; UCSC), used by `scripts/mask_and_retier.py`.
+- Tests: `backend/tests/tad_vci/test_mask_option.py`,
+  `backend/tests/tad_vci/test_bigwig_chromosome_without_data.py`,
   `backend/tests/tad_vci/test_loops_encode_juicer_layout.py`,
   `backend/tests/tad_vci/test_multicell_demo_gz_beds.py`,
   `backend/tests/tad_vci/test_output_dir_read_only_install.py`.
