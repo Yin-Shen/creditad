@@ -13,7 +13,7 @@ type: software
 license: MIT
 version: "1.0.5"
 repository-code: "https://github.com/Yin-Shen/creditad"
-date-released: "2026-10-13"
+date-released: "2026-10-16"
 authors:
   - family-names: "Yang"
     given-names: "Zhongxin"
